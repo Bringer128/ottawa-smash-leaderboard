@@ -1,3 +1,9 @@
-export function helloWorld(req, res) {
-  return res.send('Hello, World');
-};
+import  functions from '@google-cloud/functions-framework';
+
+// Register an HTTP function with the Functions Framework
+functions.http('myHttpFunction', (req, res) => {
+  // Your code here
+
+  // Send an HTTP response
+  res.send('OK');
+});
