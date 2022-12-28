@@ -9,3 +9,4 @@ gcloud functions deploy \
   --entry-point=myHttpFunction \
   --trigger-http \
   --allow-unauthenticated
+  --service-account functions-service-account@ottawa-smash-discord-bot.iam.gserviceaccount.com
