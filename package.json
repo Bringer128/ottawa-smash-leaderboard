@@ -1,10 +1,12 @@
 {
   "type": "module",
   "dependencies": {
+    "@google-cloud/firestore": "^6.4.1",
     "@google-cloud/functions-framework": "^3.1.2",
     "node-fetch": "^3.3.0"
   },
   "scripts": {
+    "setup-auth": "gcloud auth application-default login --impersonate-service-account=functions-service-account@ottawa-smash-discord-bot.iam.gserviceaccount.com",
     "start": "functions-framework --target=myHttpFunction"
   }
 }
