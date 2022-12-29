@@ -8,5 +8,5 @@ gcloud functions deploy \
   --source=. \
   --entry-point=register \
   --trigger-http \
-  --allow-unauthenticated
+  --allow-unauthenticated \
   --service-account functions-service-account@ottawa-smash-discord-bot.iam.gserviceaccount.com
