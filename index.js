@@ -4,4 +4,4 @@ import { register } from "./register";
 import { recurringScrape } from "./recurring-scrape.js";
 
 functions.http("register", register);
-functions.http("recurring-scrape", recurringScrape);
+functions.cloudEvent("recurring-scrape", recurringScrape);

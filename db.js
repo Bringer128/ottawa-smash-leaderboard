@@ -32,3 +32,9 @@ export async function createUser({
   const userDocument = db.doc(`users/${connectCode}`);
   await userDocument.set(user);
 }
+
+export async function listUsers() {
+  const usersCollection = db.collection("users");
+  const documentRefs = await usersCollection.listDocuments();
+  return documentRefs.map((x) => x.id);
+}
