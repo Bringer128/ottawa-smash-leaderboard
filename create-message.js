@@ -16,8 +16,8 @@ export async function createDiscordMessage() {
   const results = await readResults();
   const textResult = results.results
     .map(
-      (x) =>
-        `${x.displayName} - ${x.characters
+      (x, i) =>
+        `${i}: ${x.displayName} - ${x.characters
           .map((y) => y.character)
           .join(",")} - Rating: ${x.rating}`
     )
