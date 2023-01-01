@@ -2,8 +2,8 @@ import { createUser } from "./db.js";
 import { discordAuth } from "./discord-auth.js";
 
 function validate(connectCode) {
-  if (!connectCode.trim().match(/^[A-Za-z]{1,4}#\d{1,3}/)) {
-    return `Invalid connect code: ${connectCode}`;
+  if (!connectCode.trim().match(/^[A-Z]+#\d+/)) {
+    return `Invalid connect code: ${connectCode}. Must be upper case and include the #.`;
   }
 }
 
