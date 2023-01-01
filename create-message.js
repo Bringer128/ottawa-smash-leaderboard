@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { readResults } from "./db.js";
 
-const CHANNEL_ID = "1058943303766245416";
+const CHANNEL_ID = "1058962408749682698";
 
 export async function createDiscordMessage() {
   const apiToken = process.env.BOT_TOKEN;

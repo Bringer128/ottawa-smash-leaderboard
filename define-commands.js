@@ -18,7 +18,7 @@ const registerCommand = {
 };
 
 const APPLICATION_ID = "1057467461135507536";
-const GUILD_ID = "1057467076639473765";
+const GUILD_ID = "205436248481988608";
 
 const url = `https://discord.com/api/v10/applications/${APPLICATION_ID}/guilds/${GUILD_ID}/commands`;
 console.log(url);
