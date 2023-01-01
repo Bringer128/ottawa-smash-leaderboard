@@ -11,7 +11,7 @@ async function doRegister(requestBody, res) {
   const interestingFields = {
     channelId: requestBody.channel_id,
     guildId: requestBody.data.guild_id,
-    connectCode: requestBody.data.options[0].value,
+    connectCode: requestBody.data.options[0].value.toUpperCase(),
     discordUser: {
       username: requestBody.member.user.username,
       id: requestBody.member.user.id,
