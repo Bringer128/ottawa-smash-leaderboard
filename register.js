@@ -7,7 +7,7 @@ function validate(connectCode) {
   }
 }
 
-async function doRegister(requestBody) {
+async function doRegister(requestBody, res) {
   const interestingFields = {
     channelId: requestBody.channel_id,
     guildId: requestBody.data.guild_id,

@@ -40,6 +40,14 @@ export async function listUsers() {
 }
 
 export async function writeResults(results) {
-  const resultsDoc = db.doc(`results/${Date.now()}`);
+  const resultsDoc = db.doc(`results/${results.createdAt}`);
   await resultsDoc.set(results);
+}
+
+export async function readResults() {
+  const collection = db.collection("results");
+  const snapshot = await collection.orderBy("createdAt", "desc").limit(1).get();
+  if (snapshot.empty) throw "wtf";
+  const results = snapshot.docs[0].data();
+  return results;
 }

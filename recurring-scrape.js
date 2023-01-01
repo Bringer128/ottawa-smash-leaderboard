@@ -1,5 +1,6 @@
 import { listUsers, writeResults } from "./db.js";
 import { scrape } from "./scrape.js";
+import { createDiscordMessage } from "./create-message.js";
 import { RateLimiter } from "limiter";
 
 const limiter = new RateLimiter({ tokensPerInterval: 1, interval: "second" });
@@ -26,6 +27,9 @@ export async function recurringScrape(_cloudEvent) {
   results.sort((first, second) => second.rating - first.rating);
 
   await writeResults({
+    createdAt: Date.now(),
     results: results.sort((first, second) => second.rating - first.rating),
   });
+
+  await createDiscordMessage();
 }
