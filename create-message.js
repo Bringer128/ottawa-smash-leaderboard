@@ -1,12 +1,12 @@
 import fetch from "node-fetch";
 import { readResults } from "./db.js";
 
-const apiToken = process.env.BOT_TOKEN;
-if (!apiToken) throw "Requires environment variable: BOT_TOKEN";
-
 const CHANNEL_ID = "1058943303766245416";
 
 export async function createDiscordMessage() {
+  const apiToken = process.env.BOT_TOKEN;
+  if (!apiToken) throw "Requires environment variable: BOT_TOKEN";
+
   const url = `https://discord.com/api/v10/channels/${CHANNEL_ID}/messages`;
   const headers = {
     Authorization: `Bot ${apiToken}`,
