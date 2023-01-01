@@ -60,7 +60,6 @@ export async function scrape(connectCode) {
 
   if (response.status == 200) {
     const json = await response.json();
-    console.log(json);
     const user = json.data.getConnectCode?.user;
     if (!user) return null;
 
