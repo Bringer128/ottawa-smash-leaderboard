@@ -1,5 +1,8 @@
-import { listUsers } from "./db.js";
+import { listUsers, writeResults } from "./db.js";
 import { scrape } from "./scrape.js";
+import { RateLimiter } from "limiter";
+
+const limiter = new RateLimiter({ tokensPerInterval: 1, interval: "second" });
 
 export async function recurringScrape(_cloudEvent) {
   const users = await listUsers();
@@ -10,8 +13,19 @@ export async function recurringScrape(_cloudEvent) {
   for (const connectCode of users) {
     // We can get a lot of parallelism here but we should be nice
     // to the Slippi API and do them in sequence to avoid too many requests
-    const result = await scrape(connectCode);
-    results.push(result);
+    await limiter.removeTokens(1);
+    let result;
+    try {
+      result = await scrape(connectCode);
+    } catch (e) {}
+    if (result) {
+      results.push(result);
+    }
   }
-  console.log(results);
+
+  results.sort((first, second) => second.rating - first.rating);
+
+  await writeResults({
+    results: results.sort((first, second) => second.rating - first.rating),
+  });
 }

@@ -38,3 +38,8 @@ export async function listUsers() {
   const documentRefs = await usersCollection.listDocuments();
   return documentRefs.map((x) => x.id);
 }
+
+export async function writeResults(results) {
+  const resultsDoc = db.doc(`results/${Date.now()}`);
+  await resultsDoc.set(results);
+}
