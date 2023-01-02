@@ -1,8 +1,8 @@
 import { getRank } from "./ranks.js";
 
 function rankToEmoji(rank) {
-  // E.g. Bronze I -> :bronzei:
-  const nospaces = rank.toLowerCase().replace(" ", "");
+  // E.g. Bronze II -> :BronzeII:
+  const nospaces = rank.replace(" ", "");
   return `:${nospaces}:`;
 }
 
