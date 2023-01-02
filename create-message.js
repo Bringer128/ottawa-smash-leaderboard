@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import { readResults } from "./db.js";
+import { formatMessage } from "./message-formatter.js";
 
 const CHANNEL_ID = "1058962408749682698";
 
@@ -14,20 +15,13 @@ export async function createDiscordMessage() {
   };
 
   const results = await readResults();
-  const textResult = results.results
-    .map(
-      (x, i) =>
-        `${i + 1}: ${x.displayName} - ${x.characters
-          .map((y) => y.character)
-          .join(",")} - Rating: ${x.rating}`
-    )
-    .join("\n");
+  const content = formatMessage(results.results);
 
   await fetch(url, {
     headers,
     method: "POST",
     body: JSON.stringify({
-      content: "Today's rankings:\n" + textResult,
+      content: content,
     }),
   });
 }

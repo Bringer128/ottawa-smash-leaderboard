@@ -34,15 +34,9 @@ export function getRank(
     return "Grandmaster";
   }
 
-  ranges.reduce((rating, [rank, min, max]) => {
-    if (rating !== "Unknown") return rating;
+  return ranges.reduce((foundRank, [rank, min, max]) => {
+    if (foundRank !== "Unknown") return foundRank;
     if (min < rating && rating < max) return rank;
-    return rating;
+    return foundRank;
   }, "Unknown");
-
-  ranges.forEach(([rank, min, max]) => {
-    if (min <= rating && rating <= max) {
-      return rank;
-    }
-  });
 }
