@@ -1,9 +1,10 @@
 import { getRank } from "./ranks.js";
+import { getEmojiIdForName } from "./emoji.js";
 
 function rankToEmoji(rank) {
   // E.g. Bronze II -> :BronzeII:
   const nospaces = rank.replace(" ", "");
-  return `:${nospaces}:`;
+  return getEmojiIdForName(nospaces);
 }
 
 function ratingToEmoji(rating) {
@@ -13,7 +14,7 @@ function ratingToEmoji(rating) {
 
 function characterToEmoji(character) {
   const nospaces = character.toLowerCase().replaceAll(" ", "");
-  return `:${nospaces}:`;
+  return getEmojiIdForName(nospaces);
 }
 
 function formatRow({ displayName, connectCode, characters, rating }, index) {
