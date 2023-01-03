@@ -3,6 +3,7 @@ import functions from "@google-cloud/functions-framework";
 import { register } from "./register.js";
 import { recurringScrape } from "./recurring-scrape.js";
 import { discordAuth } from "./discord-auth.js";
+import { PubSub } from "@google-cloud/pubsub";
 
 async function auth(req, res, callback) {
   const error = await discordAuth(req.headers, req.rawBody);
@@ -15,22 +16,31 @@ async function auth(req, res, callback) {
     return;
   }
   if (req.body.type == 2) {
-    callback();
+    await callback();
   }
   res.status(400).json({ error: `Unknown type: ${req.body.type}` });
 }
 
-functions.http("register", function (req, res) {
-  return auth(req, res, () => {
+async function triggerScrape(res) {
+  const pubsub = new PubSub();
+  try {
+    const messageId = await pubsub
+      .topic("daily-scrape")
+      .publishMessage({ data: Buffer.from("foo") });
+    console.log(`Message ${messageId} published.`);
+    res.status(201);
+  } catch (error) {
+    console.error(`Received error while publishing: ${error.message}`);
+    res.status(500);
+  }
+}
+
+functions.http("register", async function (req, res) {
+  return await auth(req, res, async () => {
     if (req.body.data.name === "register") {
-      register(req.body, res);
+      await register(req.body, res);
     } else if (req.body.data.name === "show_leaderboard") {
-      res.json({
-        type: 4,
-        data: {
-          content: "Leaderboard command in progress. Be patient!",
-        },
-      });
+      await triggerScrape();
     }
   });
 });
