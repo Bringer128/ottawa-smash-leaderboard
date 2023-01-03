@@ -30,7 +30,7 @@ function formatRow({ displayName, connectCode, characters, rating }, index) {
 
 export function formatMessage(results) {
   const textResult = results
-    .slice(0, 15)
+    .slice(0, 10)
     .map((x, i) => formatRow(x, i))
     .join("\n");
   return "Today's rankings:\n" + textResult;
