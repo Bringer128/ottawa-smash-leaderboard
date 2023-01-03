@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 import { readResults } from "./db.js";
 import { formatMessage } from "./message-formatter.js";
 
+const TEST_SERVER_CHANNEL_ID = "1057467076639473768";
 const CHANNEL_ID = "1058962408749682698";
 
 export async function createDiscordMessage() {
