@@ -1,5 +1,4 @@
 import { createUser } from "./db.js";
-import { discordAuth } from "./discord-auth.js";
 
 function validate(connectCode) {
   if (!connectCode.trim().match(/^[A-Z]+#\d+/)) {
@@ -46,18 +45,5 @@ async function doRegister(requestBody, res) {
 }
 
 export async function register(req, res) {
-  const error = await discordAuth(req.headers, req.rawBody);
-  if (error && error.code) {
-    res.status(error.code);
-    return;
-  }
-  if (req.body.type == 1) {
-    res.json({ type: 1 });
-    return;
-  }
-  if (req.body.type == 2) {
-    await doRegister(req.body, res);
-    return;
-  }
-  res.status(400).json({ error: `Unknown type: ${req.body.type}` });
+  await doRegister(req.body, res);
 }
