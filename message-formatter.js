@@ -23,7 +23,7 @@ function formatRow({ displayName, connectCode, characters, rating }, index) {
   const characterChunk = characters
     .map((char) => characterToEmoji(char.character))
     .join();
-  const ratingChunk = `${ratingToEmoji(rating)} ELO: ${rating}`;
+  const ratingChunk = `${ratingToEmoji(rating)} ELO: ${Math.floor(rating)}`;
 
   return `${position}. ${nameChunk} - ${characterChunk} - ${ratingChunk}`;
 }
