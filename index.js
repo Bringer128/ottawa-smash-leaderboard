@@ -40,7 +40,7 @@ functions.http("register", async function (req, res) {
     if (req.body.data.name === "register") {
       await register(req.body, res);
     } else if (req.body.data.name === "show_leaderboard") {
-      await triggerScrape();
+      await triggerScrape(res);
     }
   });
 });
