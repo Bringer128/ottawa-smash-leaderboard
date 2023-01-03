@@ -28,10 +28,20 @@ async function triggerScrape(res) {
       .topic("daily-scrape")
       .publishMessage({ data: Buffer.from("foo") });
     console.log(`Message ${messageId} published.`);
-    res.status(201);
+    res.status(201).json({
+      type: 4,
+      data: {
+        content: "Asking Slippi nicely for updated stats; please wait.",
+      },
+    });
   } catch (error) {
     console.error(`Received error while publishing: ${error.message}`);
-    res.status(500);
+    res.status(500).json({
+      type: 4,
+      data: {
+        content: "Unexpected error",
+      },
+    });
   }
 }
 
