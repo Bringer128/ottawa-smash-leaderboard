@@ -25,7 +25,12 @@ functions.http("register", function (req, res) {
     if (req.body.data.name === "register") {
       register(req.body, res);
     } else if (req.body.data.name === "leaderboard") {
-      recurringScrape();
+      res.json({
+        type: 4,
+        data: {
+          content: "Leaderboard command in progress. Be patient!",
+        },
+      });
     }
   });
 });

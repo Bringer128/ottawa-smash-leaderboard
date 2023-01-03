@@ -16,6 +16,11 @@ const registerCommand = {
     },
   ],
 };
+const showLeaderboardCommand = {
+  name: "show_leaderboard",
+  description: "Show the leaderboard",
+  type: 1,
+};
 
 const APPLICATION_ID = "1057467461135507536";
 const GUILD_ID = "205436248481988608";
@@ -32,7 +37,7 @@ const headers = {
   const response = await fetch(url, {
     headers,
     method: "POST",
-    body: JSON.stringify(registerCommand),
+    body: JSON.stringify(showLeaderboardCommand),
   });
 
   console.log(response.status);
