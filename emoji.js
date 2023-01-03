@@ -49,8 +49,6 @@ function uniqueId(id, name) {
 const globalEmojis = emojis.map(({ id, name }) => [name, uniqueId(id, name)]);
 const lookupByName = Object.fromEntries(globalEmojis);
 
-console.log(JSON.stringify(lookupByName));
-
 export function getEmojiIdForName(name) {
   const result = lookupByName[name];
   if (!result) console.log("Couldn't find emoji for name: " + name);
