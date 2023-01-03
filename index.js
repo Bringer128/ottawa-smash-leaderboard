@@ -24,7 +24,7 @@ functions.http("register", function (req, res) {
   return auth(req, res, () => {
     if (req.body.data.name === "register") {
       register(req.body, res);
-    } else if (req.body.data.name === "leaderboard") {
+    } else if (req.body.data.name === "show_leaderboard") {
       res.json({
         type: 4,
         data: {
