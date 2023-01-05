@@ -48,7 +48,7 @@ async function triggerScrape(res) {
 functions.http("register", async function (req, res) {
   return await auth(req, res, async () => {
     if (req.body.data.name === "register") {
-      await register(req.body, res);
+      await register(req, res);
     } else if (req.body.data.name === "show_leaderboard") {
       await triggerScrape(res);
     }
