@@ -28,10 +28,25 @@ function formatRow({ displayName, connectCode, characters, rating }, index) {
   return `${position}. ${nameChunk} - ${characterChunk} - ${ratingChunk}`;
 }
 
-export function formatMessage(results) {
-  const textResult = results
-    .slice(0, 10)
-    .map((x, i) => formatRow(x, i))
-    .join("\n");
-  return "Today's rankings:\n" + textResult;
+function linesToMessages(lines) {
+  let currentMessage = "";
+  const messages = [];
+  for (let line of lines) {
+    const newLength = currentMessage.length + line.length;
+    if (newLength < 2000) {
+      currentMessage = currentMessage + "\n" + line;
+    } else {
+      messages.push(currentMessage);
+      currentMessage = line;
+    }
+  }
+  if (currentMessage !== "") messages.push(currentMessage);
+  return messages;
+}
+
+export function formatToMessages(results) {
+  const lines = results.map((x, i) => formatRow(x, i));
+  lines.unshift("Today's rankings:");
+
+  return linesToMessages(lines);
 }
