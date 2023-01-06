@@ -51,3 +51,14 @@ export async function readResults() {
   const results = snapshot.docs[0].data();
   return results;
 }
+
+export async function writeLastMessages({ channelId, messageIds }) {
+  const doc = db.document(`discordMessages/${channelId}`);
+  await doc.set(messageIds);
+}
+
+export async function readLastMessages(channelId) {
+  const doc = db.document(`discordMessages/${channelId}`);
+  const snapshot = await doc.get();
+  return snapshot.data();
+}
