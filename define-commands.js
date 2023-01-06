@@ -1,48 +1,32 @@
 import fetch from "node-fetch";
 
+import commands from "./command-definitions";
+
 const apiToken = process.env.BOT_TOKEN;
 if (!apiToken) throw "Requires environment variable: BOT_TOKEN";
-
-const registerCommand = {
-  name: "register",
-  description: "Register your connect code to the leaderboard",
-  type: 1, // CHAT_INPUT aka slash commands
-  options: [
-    {
-      name: "connect-code",
-      description: "Your Slippi connect code e.g. BRGR#785",
-      type: 3, // STRING
-      required: true,
-    },
-  ],
-};
-const showLeaderboardCommand = {
-  name: "show_leaderboard",
-  description: "Show the leaderboard",
-  type: 1,
-};
 
 const APPLICATION_ID = "1057467461135507536";
 const GUILD_ID = "205436248481988608";
 
-const url = `https://discord.com/api/v10/applications/${APPLICATION_ID}/guilds/${GUILD_ID}/commands`;
-console.log(url);
-console.log(apiToken);
 const headers = {
   Authorization: `Bot ${apiToken}`,
   "Content-Type": "application/json",
 };
 
-(async () => {
-  const response = await fetch(url, {
-    headers,
-    method: "POST",
-    body: JSON.stringify(showLeaderboardCommand),
-  });
+async function defineCommands(commands, guild = GUILD_ID) {
+  const url = `https://discord.com/api/v10/applications/${APPLICATION_ID}/guilds/${guild}/commands`;
 
-  console.log(response.status);
+  for (let command of commands) {
+    const response = await fetch(url, {
+      headers,
+      method: "POST",
+      body: JSON.stringify(command),
+    });
+    console.log(response.status);
 
-  const json = await response.json();
+    const json = await response.json();
+    console.log(JSON.stringify(json));
+  }
+}
 
-  console.log(JSON.stringify(json));
-})();
+await defineCommands(commands);
