@@ -13,7 +13,7 @@ export async function createDiscordMessage() {
   if (!apiToken) throw "Requires environment variable: BOT_TOKEN";
 
   const channelId = CHANNEL_ID;
-  const discord = new Discord(channelId, apiToken);
+  const discord = new Discord({ channelId, apiToken });
 
   const results = await readResults();
   const messages = formatToMessages(results.results);
