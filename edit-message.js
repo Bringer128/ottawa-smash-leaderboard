@@ -1,4 +1,4 @@
-import { readResults, readLastMessages } from "./db.js";
+import { readResults, readLastMessages, writeLastMessages } from "./db.js";
 import { formatToMessages } from "./message-formatter.js";
 import { RateLimiter } from "limiter";
 import Discord from "./discord/Discord.js";
@@ -12,16 +12,23 @@ export async function editLastDiscordMessages() {
   const apiToken = process.env.BOT_TOKEN;
   if (!apiToken) throw "Requires environment variable: BOT_TOKEN";
 
-  const channelId = CHANNEL_ID;
-  const discord = Discord.new({ channelId, apiToken });
+  const channelId = TEST_SERVER_CHANNEL_ID;
+  const discord = new Discord({ channel: channelId, apiToken });
 
   const lastMessageId = await discord.getLastMessageInChannel();
 
   const results = await readResults();
   const messages = formatToMessages(results.results);
   const lastMessages = await readLastMessages(channelId);
+  console.log(
+    lastMessageId,
+    JSON.stringify(lastMessages),
+    lastMessages.includes(lastMessageId),
+    lastMessages.length == messages.length
+  );
   if (
-    lastMessages.include(lastMessageId) &&
+    lastMessages &&
+    lastMessages.includes(lastMessageId) &&
     lastMessages.length == messages.length
   ) {
     // We can edit
@@ -35,11 +42,15 @@ export async function editLastDiscordMessages() {
       discord.editMessage(id, content);
     }
   } else {
+    throw "What";
     // We must create - we're not the latest, or the number of messages has changed
     // so we can't just go back and edit them.
+    const ids = [];
     for (let message of messages) {
       await limiter.removeTokens(1);
-      discord.createMessage(message);
+      const id = await discord.createMessage(message);
+      ids.push(id);
     }
+    await writeLastMessages({ channelId, messageIds: ids });
   }
 }
