@@ -17,12 +17,24 @@ function characterToEmoji(character) {
   return getEmojiIdForName(nospaces);
 }
 
+function formatCharacters(characters) {
+  const totalGames = characters.reduce(
+    (sum, { gameCount }) => sum + gameCount,
+    0
+  );
+  const charactersToKeep = characters.filter(
+    // Stolen from Slippi - if <2% of total games then skip the character.
+    (char) => char.gameCount / totalGames > 0.02
+  );
+  return charactersToKeep
+    .map((char) => characterToEmoji(char.character))
+    .join();
+}
+
 function formatRow({ displayName, connectCode, characters, rating }, index) {
   const position = index + 1;
   const nameChunk = `${displayName} (${connectCode})`;
-  const characterChunk = characters
-    .map((char) => characterToEmoji(char.character))
-    .join();
+  const characterChunk = formatCharacters(characters);
   const ratingChunk = `${ratingToEmoji(rating)} ELO: ${Math.floor(rating)}`;
 
   return `${position}. ${nameChunk} - ${characterChunk} - ${ratingChunk}`;
