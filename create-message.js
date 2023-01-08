@@ -1,7 +1,7 @@
-import fetch from "node-fetch";
 import { readResults, writeLastMessages } from "./db.js";
 import { formatToMessages } from "./message-formatter.js";
 import { RateLimiter } from "limiter";
+import Discord from "discord/Discord.js";
 
 const limiter = new RateLimiter({ tokensPerInterval: 1, interval: "second" });
 
@@ -13,12 +13,7 @@ export async function createDiscordMessage() {
   if (!apiToken) throw "Requires environment variable: BOT_TOKEN";
 
   const channelId = CHANNEL_ID;
-
-  const url = `https://discord.com/api/v10/channels/${channelId}/messages`;
-  const headers = {
-    Authorization: `Bot ${apiToken}`,
-    "Content-Type": "application/json",
-  };
+  const discord = new Discord(channelId, apiToken);
 
   const results = await readResults();
   const messages = formatToMessages(results.results);
@@ -26,15 +21,7 @@ export async function createDiscordMessage() {
   const messageIds = [];
   for (let message of messages) {
     await limiter.removeTokens(1);
-    const response = await fetch(url, {
-      headers,
-      method: "POST",
-      body: JSON.stringify({
-        content: message,
-      }),
-    });
-    if (!response.ok) throw `Bad response: ${response.statusCode}`;
-    const { id } = await response.json();
+    const id = discord.postMessage(message);
     messageIds.push({ id });
   }
 
