@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 import commands from "./command-definitions";
 import Discord from "./discord/Discord";
 
