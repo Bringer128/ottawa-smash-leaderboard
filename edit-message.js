@@ -20,12 +20,7 @@ export async function editLastDiscordMessages() {
   const results = await readResults();
   const messages = formatToMessages(results.results);
   const lastMessages = await readLastMessages(channelId);
-  console.log(
-    lastMessageId,
-    JSON.stringify(lastMessages),
-    lastMessages.includes(lastMessageId),
-    lastMessages.length == messages.length
-  );
+  
   if (
     lastMessages &&
     lastMessages.includes(lastMessageId) &&
