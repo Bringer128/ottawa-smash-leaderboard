@@ -43,18 +43,17 @@ function formatRow(
 ) {
   const position = index + 1;
   let positionChunk = `${position}.`;
-  if (indexChange !== 0) {
-    const up = indexChange < 0;
-    const number = Math.abs(indexChange);
-    positionChunk += `(${up ? "🔺" : "🔻"}${number})`;
+  if (indexChange.number !== 0) {
+    const up = indexChange.number < 0;
+    positionChunk += `${up ? "🔺" : "🔻"}(was ${indexChange.old + 1})`;
   }
   const nameChunk = `${displayName} (${connectCode})`;
   const characterChunk = formatCharacters(characters);
   let ratingChunk = `${ratingToEmoji(rating)} ELO: ${Math.floor(rating)}`;
-  if (ratingChange !== 0) {
-    const up = ratingChange > 0;
-    const number = Math.floor(Math.abs(ratingChange));
-    ratingChunk += `${up ? "🔺" : "🔻"}${number}`;
+  if (ratingChange.number !== 0) {
+    const up = ratingChange.number > 0;
+    const number = Math.floor(Math.abs(ratingChange.number));
+    ratingChunk += `(${up ? "+" : "-"}${number})`;
   }
 
   return `${positionChunk} ${nameChunk} - ${characterChunk} - ${ratingChunk}`;
@@ -111,8 +110,16 @@ function computeChangesToRankAndELO(bothResults) {
   const changes = merged.map(([connectCode, { latest, previous }]) => [
     connectCode,
     {
-      ratingChange: latest.rating - previous.rating,
-      indexChange: latest.index - previous.index,
+      ratingChange: {
+        number: latest.rating - previous.rating,
+        old: previous.rating,
+        new: latest.rating,
+      },
+      indexChange: {
+        number: latest.index - previous.index,
+        old: previous.index,
+        new: latest.index,
+      },
     },
   ]);
 
