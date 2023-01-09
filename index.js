@@ -17,6 +17,7 @@ async function auth(req, res, callback) {
   }
   if (req.body.type == 2) {
     await callback();
+    return;
   }
   res.status(400).json({ error: `Unknown type: ${req.body.type}` });
 }
