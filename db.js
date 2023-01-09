@@ -46,9 +46,9 @@ export async function writeResults(results) {
 
 export async function readResults() {
   const collection = db.collection("results");
-  const snapshot = await collection.orderBy("createdAt", "desc").limit(1).get();
+  const snapshot = await collection.orderBy("createdAt", "desc").limit(2).get();
   if (snapshot.empty) throw "wtf";
-  const results = snapshot.docs[0].data();
+  const results = snapshot.docs.map((doc) => doc.data());
   return results;
 }
 

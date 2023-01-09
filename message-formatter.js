@@ -31,13 +31,33 @@ function formatCharacters(characters) {
     .join();
 }
 
-function formatRow({ displayName, connectCode, characters, rating }, index) {
+function formatRow(
+  {
+    displayName,
+    connectCode,
+    characters,
+    rating,
+    changes: { indexChange, ratingChange },
+  },
+  index
+) {
   const position = index + 1;
+  let positionChunk = `${position}.`;
+  if (indexChange !== 0) {
+    const up = indexChange < 0;
+    const number = Math.abs(indexChange);
+    positionChunk += `(${up ? "🔺" : "🔻"}${number})`;
+  }
   const nameChunk = `${displayName} (${connectCode})`;
   const characterChunk = formatCharacters(characters);
-  const ratingChunk = `${ratingToEmoji(rating)} ELO: ${Math.floor(rating)}`;
+  let ratingChunk = `${ratingToEmoji(rating)} ELO: ${Math.floor(rating)}`;
+  if (ratingChange !== 0) {
+    const up = ratingChange > 0;
+    const number = Math.floor(Math.abs(ratingChange));
+    ratingChunk += `${up ? "🔺" : "🔻"}${number}`;
+  }
 
-  return `${position}. ${nameChunk} - ${characterChunk} - ${ratingChunk}`;
+  return `${positionChunk} ${nameChunk} - ${characterChunk} - ${ratingChunk}`;
 }
 
 function linesToMessages(lines) {
@@ -56,9 +76,50 @@ function linesToMessages(lines) {
   return messages;
 }
 
-export function formatToMessages(results) {
-  const lines = results.map((x, i) => formatRow(x, i));
+function formatToMessagesWithChanges(singleResults, changes) {
+  const lines = singleResults
+    .map((result) => ({ ...result, changes: changes[result.connectCode] }))
+    .map((resultWithChanges, index) => formatRow(resultWithChanges, index));
   lines.unshift("Today's rankings:");
 
   return linesToMessages(lines);
+}
+
+function groupByConnectCode(results) {
+  return Object.fromEntries(
+    results.map(({ connectCode, rating }, index) => [
+      connectCode,
+      { index, rating },
+    ])
+  );
+}
+
+function computeChangesToRankAndELO(bothResults) {
+  // Currently I have: rating and index for each result
+  // I want to get an object like:
+  /** {
+   *   "BRGR#785": { ratingChange: 10.123, indexChange: -1 }
+   * } */
+
+  // First group by connect code
+  const [latest, previous] = bothResults.map(groupByConnectCode);
+  const merged = Object.entries(latest).map(([connectCode, result]) => [
+    connectCode,
+    { latest: result, previous: previous[connectCode] },
+  ]);
+  // Then, get the changes
+  const changes = merged.map(([connectCode, { latest, previous }]) => [
+    connectCode,
+    {
+      ratingChange: latest.rating - previous.rating,
+      indexChange: latest.index - previous.index,
+    },
+  ]);
+
+  return Object.fromEntries(changes);
+}
+
+export function formatToMessages(results) {
+  const changes = computeChangesToRankAndELO(results);
+  return formatToMessagesWithChanges(results[0], changes);
 }

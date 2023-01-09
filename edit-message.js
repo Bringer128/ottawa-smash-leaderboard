@@ -18,7 +18,7 @@ export async function editLastDiscordMessages() {
   const lastMessageId = await discord.getLastMessageInChannel();
 
   const results = await readResults();
-  const messages = formatToMessages(results.results);
+  const messages = formatToMessages(results.map((res) => res.results));
   const lastMessages = await readLastMessages(channelId);
 
   if (
