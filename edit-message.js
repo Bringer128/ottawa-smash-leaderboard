@@ -20,7 +20,7 @@ export async function editLastDiscordMessages() {
   const results = await readResults();
   const messages = formatToMessages(results.results);
   const lastMessages = await readLastMessages(channelId);
-  
+
   if (
     lastMessages &&
     lastMessages.includes(lastMessageId) &&
@@ -37,7 +37,6 @@ export async function editLastDiscordMessages() {
       discord.editMessage(id, content);
     }
   } else {
-    throw "What";
     // We must create - we're not the latest, or the number of messages has changed
     // so we can't just go back and edit them.
     const ids = [];
