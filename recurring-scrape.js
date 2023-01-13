@@ -21,6 +21,8 @@ export async function recurringScrape(_cloudEvent) {
     } catch (e) {}
     if (result) {
       results.push(result);
+    } else {
+      console.warn(`Invalid code: ${connectCode}`);
     }
   }
 

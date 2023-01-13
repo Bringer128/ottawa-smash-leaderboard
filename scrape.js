@@ -58,7 +58,7 @@ export async function scrape(connectCode) {
     }
   );
 
-  if (response.status == 200) {
+  if (response.ok) {
     const json = await response.json();
     const user = json.data.getConnectCode?.user;
     if (!user) return null;
