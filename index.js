@@ -8,7 +8,7 @@ import { register } from "./register.js";
 import { recurringScrape } from "./recurring-scrape.js";
 import { discordAuth } from "./discord-auth.js";
 import { PubSub } from "@google-cloud/pubsub";
-import { getRegistrationDetails } from "db.js";
+import { getRegistrationDetails } from "./db.js";
 import Discord from "./discord/Discord.js";
 
 async function auth(req, res, callback) {
