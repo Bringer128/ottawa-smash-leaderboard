@@ -39,23 +39,9 @@ jobs:
           # Replace with your GitHub Service Account
           service_account: "github-actions-service-account@ottawa-smash-discord-bot.iam.gserviceaccount.com"
 
-      - id: "deploy-register"
-        uses: "google-github-actions/deploy-cloud-functions@v0"
-        with:
-          name: "register-function"
-          runtime: "nodejs16"
-          region: "us-east1"
-          entry_point: "register"
-          service_account_email: "functions-service-account@ottawa-smash-discord-bot.iam.gserviceaccount.com"
-          
-      - id: "deploy-recurring-scrape"
-        uses: "google-github-actions/deploy-cloud-functions@v0"
-        with:
-          name: "recurring-scrape"
-          runtime: "nodejs16"
-          region: "us-east1"
-          entry_point: "recurring-scrape"
-          event_trigger_type: providers/cloud.pubsub/eventTypes/topic.publish
-          event_trigger_resource: topics/daily-scrape
-          service_account_email: "functions-service-account@ottawa-smash-discord-bot.iam.gserviceaccount.com"
-          
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+        
+      - name: 'Deploy'
+        run: ./deploy.sh
+        shell: bash
