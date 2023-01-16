@@ -1,4 +1,8 @@
 import { createUser } from "./db.js";
+import Discord from "./discord/Discord.js";
+
+const TEST_SERVER_CHANNEL_ID = "1057467076639473768";
+const CHANNEL_ID = "1058962408749682698";
 
 function validate(connectCode) {
   if (!connectCode.trim().match(/^[A-Z]+#\d+/)) {
@@ -32,13 +36,15 @@ async function doRegister(requestBody, res) {
   try {
     await createUser(interestingFields);
 
-    // Send an HTTP response
-    res.json({
-      type: 4, // TODO: This is an inline response but we can do a deferred response in case the db is slow
-      data: {
-        content: `Registered ${interestingFields.connectCode} successfully!`,
-      },
+    const discord = new Discord({
+      channel: requestBody.channel_id,
+      apiToken: process.env.BOT_TOKEN,
     });
+    await discord.createMessage(
+      `Registered ${interestingFields.connectCode} successfully!`
+    );
+    // Send an HTTP response
+    res.sendStatus(201);
   } catch (e) {
     throw e; // Raise 500
   }
