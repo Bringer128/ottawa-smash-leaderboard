@@ -8,6 +8,8 @@ import { register } from "./register.js";
 import { recurringScrape } from "./recurring-scrape.js";
 import { discordAuth } from "./discord-auth.js";
 import { PubSub } from "@google-cloud/pubsub";
+import { getRegistrationDetails } from "db.js";
+import Discord from "./discord/Discord.js";
 
 async function auth(req, res, callback) {
   const error = await discordAuth(req.headers, req.rawBody);
@@ -50,6 +52,41 @@ async function triggerScrape(res) {
   }
 }
 
+async function removeUser(req, res) {
+  const { member, data } = req.body;
+  const connectCode = data.options[0].value.toUpperCase();
+
+  console.log(
+    `removeUser requested by: ${member.user.id}, ${member.user.username}`
+  );
+  const canManageGuild = Discord.hasManageGuildPermissions(member.permissions);
+  let message = null,
+    shouldRemove = false;
+  if (canManageGuild) {
+    message = `Mod removed user with code: ${connectCode}`;
+    await removeUser(connectCode);
+  } else {
+    const details = await getRegistrationDetails(connectCode);
+    const requestingUserId = member.user.id;
+    const discordId = details.user.discordUserId;
+    if (requestingUserId === discordId) {
+      message = `User: ${requestingUserId} removed ${connectCode} - they added it`;
+    } else {
+      message = `User: ${requestingUserId} attempted to remove code ${connectCode} but they did not add it`;
+    }
+  }
+
+  res.status(200).json({
+    type: 4,
+    data: {
+      content: message,
+    },
+  });
+  if (shouldRemove) {
+    await removeUser();
+  }
+}
+
 functions.http("register", async function (req, res) {
   if (!executedOnce) {
     const coldStartTimeNanos = hrtime.bigint() - startup;
@@ -62,6 +99,8 @@ functions.http("register", async function (req, res) {
       await register(req, res);
     } else if (req.body.data.name === "show_leaderboard") {
       await triggerScrape(res);
+    } else if (req.body.data.name === "remove") {
+      await removeUser(req, res);
     }
   });
 });

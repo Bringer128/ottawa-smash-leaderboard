@@ -8,6 +8,11 @@ class Discord {
     this.guild = guild;
   }
 
+  static hasManageGuildPermissions(permissions) {
+    const manageGuild = 1 << 5;
+    return (permissions & manageGuild) === manageGuild;
+  }
+
   async createMessage(content) {
     if (content.length > 2000) throw "Content too large";
 

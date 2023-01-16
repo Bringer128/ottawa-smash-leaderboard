@@ -1,5 +1,5 @@
-import commands from "./command-definitions";
-import Discord from "./discord/Discord";
+import commands from "./command-definitions/index.js";
+import Discord from "./discord/Discord.js";
 
 const apiToken = process.env.BOT_TOKEN;
 if (!apiToken) throw "Requires environment variable: BOT_TOKEN";

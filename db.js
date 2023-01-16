@@ -39,6 +39,11 @@ export async function listUsers() {
   return documentRefs.map((x) => x.id);
 }
 
+export async function removeUser(connectCode) {
+  const userDocument = db.doc(`users/${connectCode}`);
+  await userDocument.delete();
+}
+
 export async function writeResults(results) {
   const resultsDoc = db.doc(`results/${results.createdAt}`);
   await resultsDoc.set(results);
@@ -61,4 +66,11 @@ export async function readLastMessages(channelId) {
   const doc = db.doc(`discordMessages/${channelId}`);
   const snapshot = await doc.get();
   return snapshot.data()?.messageIds;
+}
+
+export async function getRegistrationDetails(connectCode) {
+  const userDocument = db.doc(`users/${connectCode}`);
+  const snapshot = await userDocument.get();
+  const { creationDetails } = snapshot.data();
+  return creationDetails;
 }
