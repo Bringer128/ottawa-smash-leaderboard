@@ -1,3 +1,7 @@
+import { hrtime } from "node:process";
+const startup = hrtime.bigint();
+let executedOnce = false;
+
 import functions from "@google-cloud/functions-framework";
 
 import { register } from "./register.js";
@@ -47,6 +51,12 @@ async function triggerScrape(res) {
 }
 
 functions.http("register", async function (req, res) {
+  if (!executedOnce) {
+    const coldStartTimeNanos = hrtime.bigint() - startup;
+    const millis = coldStartTimeNanos / 1_000_000n;
+    console.log(`Startup time: ${millis}ms`);
+    executedOnce = true;
+  }
   return await auth(req, res, async () => {
     if (req.body.data.name === "register") {
       await register(req, res);
