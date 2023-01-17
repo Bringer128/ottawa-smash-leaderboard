@@ -80,11 +80,16 @@ function formatToMessagesWithChanges(singleResults, changes) {
     .map((result) => ({ ...result, changes: changes[result.connectCode] }))
     .map((resultWithChanges, index) => formatRow(resultWithChanges, index));
 
-  const timeHours = (changes.timeChangeMs * 1.0) / 1000 / 60 / 60;
-  const latestTime = new Date(changes.new).toString();
+  const timeChange = changes.timeChangeMs;
+  const timeHours = (timeChange.number * 1.0) / 1000 / 60 / 60;
+  const latestTime = new Date(timeChange.new).toLocaleTimeString();
   lines.unshift(
-    `Rankings as of ${latestTime} (${timeHours} hours since last result)`
+    `Rankings as of ${latestTime} (displayed changes are since ${timeHours
+      .toString()
+      .substring(0, 3)} hours prior)`
   );
+  console.log(lines[0]);
+  throw "What";
 
   return linesToMessages(lines);
 }
@@ -138,6 +143,8 @@ function computeChangesToRankAndELO(resultsAndTimes) {
     old: previousTimeMs,
     new: latestTimeMs,
   };
+
+  return keyedByConnectCode;
 }
 
 export function formatToMessages(results) {
