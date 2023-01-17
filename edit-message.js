@@ -12,7 +12,7 @@ export async function editLastDiscordMessages() {
   const apiToken = process.env.BOT_TOKEN;
   if (!apiToken) throw "Requires environment variable: BOT_TOKEN";
 
-  const channelId = TEST_SERVER_CHANNEL_ID;
+  const channelId = CHANNEL_ID;
   const discord = new Discord({ channel: channelId, apiToken });
 
   const lastMessageId = await discord.getLastMessageInChannel();

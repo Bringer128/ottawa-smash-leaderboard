@@ -89,7 +89,6 @@ function formatToMessagesWithChanges(singleResults, changes) {
       .substring(0, 3)} hours prior)`
   );
   console.log(lines[0]);
-  throw "What";
 
   return linesToMessages(lines);
 }
