@@ -79,7 +79,12 @@ function formatToMessagesWithChanges(singleResults, changes) {
   const lines = singleResults
     .map((result) => ({ ...result, changes: changes[result.connectCode] }))
     .map((resultWithChanges, index) => formatRow(resultWithChanges, index));
-  lines.unshift("Today's rankings:");
+
+  const timeHours = (changes.timeChangeMs * 1.0) / 1000 / 60 / 60;
+  const latestTime = new Date(changes.new).toString();
+  lines.unshift(
+    `Rankings as of ${latestTime} (${timeHours} hours since last result)`
+  );
 
   return linesToMessages(lines);
 }
@@ -93,13 +98,17 @@ function groupByConnectCode(results) {
   );
 }
 
-function computeChangesToRankAndELO(bothResults) {
+function computeChangesToRankAndELO(resultsAndTimes) {
   // Currently I have: rating and index for each result
   // I want to get an object like:
   /** {
    *   "BRGR#785": { ratingChange: 10.123, indexChange: -1 }
    * } */
 
+  const bothResults = resultsAndTimes.map((x) => x.results);
+  const [latestTimeMs, previousTimeMs] = resultsAndTimes.map(
+    (x) => x.createdAt
+  );
   // First group by connect code
   const [latest, previous] = bothResults.map(groupByConnectCode);
   const merged = Object.entries(latest).map(([connectCode, result]) => [
@@ -123,10 +132,15 @@ function computeChangesToRankAndELO(bothResults) {
     },
   ]);
 
-  return Object.fromEntries(changes);
+  const keyedByConnectCode = Object.fromEntries(changes);
+  keyedByConnectCode.timeChangeMs = {
+    number: latestTimeMs - previousTimeMs,
+    old: previousTimeMs,
+    new: latestTimeMs,
+  };
 }
 
 export function formatToMessages(results) {
   const changes = computeChangesToRankAndELO(results);
-  return formatToMessagesWithChanges(results[0], changes);
+  return formatToMessagesWithChanges(results[0].results, changes);
 }
