@@ -8,7 +8,7 @@ import { register } from "./register.js";
 import { recurringScrape } from "./recurring-scrape.js";
 import { discordAuth } from "./discord-auth.js";
 import { PubSub } from "@google-cloud/pubsub";
-import { getRegistrationDetails } from "./db.js";
+import { getRegistrationDetails, removeUser } from "./db.js";
 import Discord from "./discord/Discord.js";
 
 async function auth(req, res, callback) {
@@ -52,25 +52,26 @@ async function triggerScrape(res) {
   }
 }
 
-async function removeUser(req, res) {
+async function deleteUser(req, res) {
   const { member, data } = req.body;
   const connectCode = data.options[0].value.toUpperCase();
 
   console.log(
-    `removeUser requested by: ${member.user.id}, ${member.user.username}`
+    `deleteUser requested by: ${member.user.id}, ${member.user.username}`
   );
   const canManageGuild = Discord.hasManageGuildPermissions(member.permissions);
   let message = null,
     shouldRemove = false;
   if (canManageGuild) {
     message = `Mod removed user with code: ${connectCode}`;
-    await removeUser(connectCode);
+    shouldRemove = true;
   } else {
     const details = await getRegistrationDetails(connectCode);
     const requestingUserId = member.user.id;
     const discordId = details.user.discordUserId;
     if (requestingUserId === discordId) {
       message = `User: ${requestingUserId} removed ${connectCode} - they added it`;
+      shouldRemove = true;
     } else {
       message = `User: ${requestingUserId} attempted to remove code ${connectCode} but they did not add it`;
     }
@@ -83,7 +84,7 @@ async function removeUser(req, res) {
     },
   });
   if (shouldRemove) {
-    await removeUser();
+    await removeUser(connectCode);
   }
 }
 
@@ -100,7 +101,7 @@ functions.http("register", async function (req, res) {
     } else if (req.body.data.name === "show_leaderboard") {
       await triggerScrape(res);
     } else if (req.body.data.name === "remove") {
-      await removeUser(req, res);
+      await deleteUser(req, res);
     }
   });
 });
