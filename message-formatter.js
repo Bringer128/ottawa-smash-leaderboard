@@ -37,6 +37,8 @@ function formatRow(
     connectCode,
     characters,
     rating,
+    wins,
+    losses,
     changes: { indexChange, ratingChange },
   },
   index
@@ -49,6 +51,7 @@ function formatRow(
   }
   const nameChunk = `${displayName} (${connectCode})`;
   const characterChunk = formatCharacters(characters);
+  const winLossChunk ° `${wins}W/${losses}L`;
   let ratingChunk = `${ratingToEmoji(rating)} ELO: ${Math.floor(rating)}`;
   if (ratingChange.number !== 0) {
     const up = ratingChange.number > 0;
