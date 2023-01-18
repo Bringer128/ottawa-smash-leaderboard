@@ -51,7 +51,7 @@ function formatRow(
   }
   const nameChunk = `${displayName} (${connectCode})`;
   const characterChunk = formatCharacters(characters);
-  const winLossChunk ° `${wins}W/${losses}L`;
+  const winLossChunk = `${wins}W/${losses}L`;
   let ratingChunk = `${ratingToEmoji(rating)} ELO: ${Math.floor(rating)}`;
   if (ratingChange.number !== 0) {
     const up = ratingChange.number > 0;
@@ -59,7 +59,7 @@ function formatRow(
     ratingChunk += `(${up ? "+" : "-"}${number})`;
   }
 
-  return `${positionChunk} ${nameChunk} - ${characterChunk} - ${ratingChunk}`;
+  return `${positionChunk} ${nameChunk} - ${characterChunk} - ${winLossChunk} ${ratingChunk}`;
 }
 
 function linesToMessages(lines) {
