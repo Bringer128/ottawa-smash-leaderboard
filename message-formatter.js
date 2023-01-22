@@ -85,7 +85,7 @@ function formatToMessagesWithChanges(singleResults, changes) {
 
   const timeChange = changes.timeChangeMs;
   const timeHours = (timeChange.number * 1.0) / 1000 / 60 / 60;
-  const latestTime = new Date(timeChange.new).toLocaleTimeString();
+  const latestTime = new Date(timeChange.new).toLocaleTimeString("en-CA", {timeZone: "America/Toronto"});
   lines.unshift(
     `Rankings as of ${latestTime} (displayed changes are since ${timeHours
       .toString()
