@@ -67,13 +67,17 @@ async function deleteUser(req, res) {
     shouldRemove = true;
   } else {
     const details = await getRegistrationDetails(connectCode);
-    const requestingUserId = member.user.id;
-    const discordId = details.user.discordUserId;
-    if (requestingUserId === discordId) {
-      message = `User: ${requestingUserId} removed ${connectCode} - they added it`;
-      shouldRemove = true;
+    if (details == null) {
+      message = `Could not find connect code: ${connectCode}. Does it match what the leaderboard prints out?`;
     } else {
-      message = `User: ${requestingUserId} attempted to remove code ${connectCode} but they did not add it`;
+      const requestingUserId = member.user.id;
+      const discordId = details.user.discordUserId;
+      if (requestingUserId === discordId) {
+        message = `User: ${requestingUserId} removed ${connectCode} - they added it`;
+        shouldRemove = true;
+      } else {
+        message = `User: ${requestingUserId} attempted to remove code ${connectCode} but they did not add it`;
+      }
     }
   }
 

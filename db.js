@@ -71,6 +71,7 @@ export async function readLastMessages(channelId) {
 export async function getRegistrationDetails(connectCode) {
   const userDocument = db.doc(`users/${connectCode}`);
   const snapshot = await userDocument.get();
+  if (!snapshot.exists) return null;
   const { creationDetails } = snapshot.data();
   return creationDetails;
 }
