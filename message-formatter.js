@@ -52,7 +52,7 @@ function formatRow(
   const nameChunk = `${displayName} (${connectCode})`;
   const characterChunk = formatCharacters(characters);
   const winLossChunk = `${wins}W/${losses}L`;
-  let ratingChunk = `${ratingToEmoji(rating)} ELO: ${Math.floor(rating)}`;
+  let ratingChunk = `${ratingToEmoji(rating)} : ${Math.floor(rating)}`;
   if (ratingChange.number !== 0) {
     const up = ratingChange.number > 0;
     const number = Math.floor(Math.abs(ratingChange.number));
