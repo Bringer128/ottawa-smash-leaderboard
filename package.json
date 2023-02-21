@@ -12,6 +12,10 @@
     "setup-auth": "gcloud auth application-default login --impersonate-service-account=functions-service-account@ottawa-smash-discord-bot.iam.gserviceaccount.com",
     "register": "functions-framework --target=register",
     "defineCommands": "node define-commands.js",
-    "scrape": "node --trace-uncaught run-scrape.js"
+    "scrape": "node --trace-uncaught run-scrape.js",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
   }
 }

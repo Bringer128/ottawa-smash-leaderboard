@@ -52,7 +52,7 @@ async function triggerScrape(res) {
   }
 }
 
-async function deleteUser(req, res) {
+async function deleteUser(req: functions.Request, res: functions.Response) {
   const { member, data } = req.body;
   const connectCode = data.options[0].value.toUpperCase();
 

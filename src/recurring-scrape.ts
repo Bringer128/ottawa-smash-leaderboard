@@ -2,10 +2,11 @@ import { listUsers, writeResults } from "./db.js";
 import { scrape } from "./scrape.js";
 import { RateLimiter } from "limiter";
 import { editLastDiscordMessages } from "./edit-message.js";
+import { CloudEvent } from "@google-cloud/functions-framework"
 
 const limiter = new RateLimiter({ tokensPerInterval: 1, interval: "second" });
 
-export async function recurringScrape(_cloudEvent) {
+export async function recurringScrape(_cloudEvent?: CloudEvent<unknown>) {
   const users = await listUsers();
 
   // This is so naive what if the list gets big and the function

@@ -1,16 +1,35 @@
 import { createUser } from "./db.js";
 import Discord from "./discord/Discord.js";
+import { Request, Response } from "@google-cloud/functions-framework"
 
 const TEST_SERVER_CHANNEL_ID = "1057467076639473768";
 const CHANNEL_ID = "1058962408749682698";
 
-function validate(connectCode) {
+function validate(connectCode: string) {
   if (!connectCode.trim().match(/^[A-Z]+#\d+/)) {
     return `Invalid connect code: ${connectCode}. Must be upper case and include the #.`;
   }
 }
 
-async function doRegister(requestBody, res) {
+type DiscordRequestBody = {
+  id: string
+  channel_id: string;  
+  data: {
+    guild_id: string
+    options: [
+      {value: string}
+    ]
+  };
+  member: {
+    user: {
+      id: string,
+      username: string
+    }
+    nick: string
+  }
+}
+
+async function doRegister(requestBody: DiscordRequestBody, res: Response) {
   const interestingFields = {
     channelId: requestBody.channel_id,
     guildId: requestBody.data.guild_id,
@@ -38,7 +57,7 @@ async function doRegister(requestBody, res) {
 
     const discord = new Discord({
       channel: requestBody.channel_id,
-      apiToken: process.env.BOT_TOKEN,
+      apiToken: process.env.BOT_TOKEN!,
     });
     await discord.createMessage(
       `Registered ${interestingFields.connectCode} successfully!`
@@ -50,6 +69,6 @@ async function doRegister(requestBody, res) {
   }
 }
 
-export async function register(req, res) {
+export async function register(req: Request, res: Response) {
   await doRegister(req.body, res);
 }

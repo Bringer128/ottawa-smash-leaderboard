@@ -1,7 +1,7 @@
 import { readResults, writeLastMessages } from "./db.js";
 import { formatToMessages } from "./message-formatter.js";
 import { RateLimiter } from "limiter";
-import Discord from "discord/Discord.js";
+import Discord from "./discord/Discord.js";
 
 const limiter = new RateLimiter({ tokensPerInterval: 1, interval: "second" });
 
