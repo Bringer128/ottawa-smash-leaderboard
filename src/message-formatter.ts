@@ -1,23 +1,25 @@
 import { getRank } from "./ranks.js";
 import { getEmojiIdForName } from "./emoji.js";
+import { PersistedResults } from "./db.js";
+import { Character, ScrapeResult } from "./scrape.js";
 
-function rankToEmoji(rank) {
+function rankToEmoji(rank: string) {
   // E.g. Bronze II -> :BronzeII:
   const nospaces = rank.replace(" ", "");
   return getEmojiIdForName(nospaces);
 }
 
-function ratingToEmoji(rating) {
+function ratingToEmoji(rating: number) {
   const rank = getRank(6, rating);
   return rankToEmoji(rank);
 }
 
-function characterToEmoji(character) {
+function characterToEmoji(character: string) {
   const nospaces = character.toLowerCase().replaceAll(" ", "");
   return getEmojiIdForName(nospaces);
 }
 
-function formatCharacters(characters) {
+function formatCharacters(characters: Character[]) {
   const totalGames = characters.reduce(
     (sum, { gameCount }) => sum + gameCount,
     0
@@ -40,8 +42,8 @@ function formatRow(
     wins,
     losses,
     changes: { indexChange, ratingChange },
-  },
-  index
+  }: ResultsWithChanges,
+  index: number
 ) {
   const position = index + 1;
   let positionChunk = `${position}.`;
@@ -62,7 +64,7 @@ function formatRow(
   return `${positionChunk} ${nameChunk} - ${characterChunk} - ${winLossChunk} ${ratingChunk}`;
 }
 
-function linesToMessages(lines) {
+function linesToMessages(lines: string[]) {
   let currentMessage = "";
   const messages = [];
   for (let line of lines) {
@@ -78,14 +80,31 @@ function linesToMessages(lines) {
   return messages;
 }
 
-function formatToMessagesWithChanges(singleResults, changes) {
+type ResultsWithChanges = ScrapeResult & {
+  changes: {
+    ratingChange: Change;
+    indexChange: Change;
+  };
+};
+
+function formatToMessagesWithChanges(
+  singleResults: ScrapeResult[],
+  changes: OverallChanges
+) {
   const lines = singleResults
-    .map((result) => ({ ...result, changes: changes[result.connectCode] }))
-    .map((resultWithChanges, index) => formatRow(resultWithChanges, index));
+    .map((result) => ({
+      ...result,
+      changes: changes.changesByConnectCode[result.connectCode],
+    }))
+    .map((resultWithChanges: ResultsWithChanges, index) =>
+      formatRow(resultWithChanges, index)
+    );
 
   const timeChange = changes.timeChangeMs;
   const timeHours = (timeChange.number * 1.0) / 1000 / 60 / 60;
-  const latestTime = new Date(timeChange.new).toLocaleTimeString("en-CA", {timeZone: "America/Toronto"});
+  const latestTime = new Date(timeChange.new).toLocaleTimeString("en-CA", {
+    timeZone: "America/Toronto",
+  });
   lines.unshift(
     `Rankings as of ${latestTime} (displayed changes are since ${timeHours
       .toString()
@@ -96,7 +115,7 @@ function formatToMessagesWithChanges(singleResults, changes) {
   return linesToMessages(lines);
 }
 
-function groupByConnectCode(results) {
+function groupByConnectCode(results: ScrapeResult[]) {
   return Object.fromEntries(
     results.map(({ connectCode, rating }, index) => [
       connectCode,
@@ -105,7 +124,30 @@ function groupByConnectCode(results) {
   );
 }
 
-function computeChangesToRankAndELO(resultsAndTimes) {
+type RankAndRating = {
+  index: number;
+  rating: number;
+};
+
+type Change = {
+  number: number;
+  old: number;
+  new: number;
+};
+
+type OverallChanges = {
+  changesByConnectCode: {
+    [k: string]: {
+      ratingChange: Change;
+      indexChange: Change;
+    };
+  };
+  timeChangeMs: Change;
+};
+
+function computeChangesToRankAndELO(
+  resultsAndTimes: [PersistedResults, PersistedResults]
+): OverallChanges {
   // Currently I have: rating and index for each result
   // I want to get an object like:
   /** {
@@ -118,38 +160,54 @@ function computeChangesToRankAndELO(resultsAndTimes) {
   );
   // First group by connect code
   const [latest, previous] = bothResults.map(groupByConnectCode);
-  const merged = Object.entries(latest).map(([connectCode, result]) => [
-    connectCode,
-    { latest: result, previous: previous[connectCode] },
-  ]);
-  // Then, get the changes
-  const changes = merged.map(([connectCode, { latest, previous }]) => [
-    connectCode,
-    {
-      ratingChange: {
-        number: latest.rating - previous.rating,
-        old: previous.rating,
-        new: latest.rating,
-      },
-      indexChange: {
-        number: latest.index - previous.index,
-        old: previous.index,
-        new: latest.index,
-      },
-    },
-  ]);
+  const merged = Object.entries(latest).map(
+    ([connectCode, result]) =>
+      [connectCode, { latest: result, previous: previous[connectCode] }] as [
+        string,
+        { latest: RankAndRating; previous: RankAndRating }
+      ]
+  );
 
-  const keyedByConnectCode = Object.fromEntries(changes);
-  keyedByConnectCode.timeChangeMs = {
-    number: latestTimeMs - previousTimeMs,
-    old: previousTimeMs,
-    new: latestTimeMs,
+  // Then, get the changes
+  const changes = merged.map(
+    ([connectCode, { latest, previous }]) =>
+      [
+        connectCode,
+        {
+          ratingChange: {
+            number: latest.rating - previous.rating,
+            old: previous.rating,
+            new: latest.rating,
+          },
+          indexChange: {
+            number: latest.index - previous.index,
+            old: previous.index,
+            new: latest.index,
+          },
+        },
+      ] as [string, { ratingChange: Change; indexChange: Change }]
+  );
+
+  const changesByConnectCode = Object.fromEntries(changes) as {
+    [k: string]: {
+      ratingChange: Change;
+      indexChange: Change;
+    };
   };
 
-  return keyedByConnectCode;
+  return {
+    changesByConnectCode,
+    timeChangeMs: {
+      number: latestTimeMs - previousTimeMs,
+      old: previousTimeMs,
+      new: latestTimeMs,
+    },
+  };
 }
 
-export function formatToMessages(results) {
+export function formatToMessages(
+  results: [PersistedResults, PersistedResults]
+) {
   const changes = computeChangesToRankAndELO(results);
   return formatToMessagesWithChanges(results[0].results, changes);
 }

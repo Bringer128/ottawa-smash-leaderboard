@@ -1,5 +1,55 @@
 import fetch from "node-fetch";
 
+type SlippiQueryResponse = {
+  getConnectCode: {
+    user: SlippiUserProfilePage;
+    __typename: string;
+  };
+};
+type SlippiUserProfilePage = {
+  displayName: string;
+  connectCode: {
+    code: string;
+    __typename: string;
+  };
+  rankedNetplayProfile: {
+    id: string;
+    ratingOrdinal: number;
+    ratingUpdateCount: number;
+    wins: number;
+    losses: number;
+    dailyGlobalPlacement?: number;
+    dailyRegionalPlacement?: number;
+    continent: string;
+    characters: {
+      id: string;
+      character: string;
+      gameCount: number;
+      __typename: string;
+    }[];
+    __typename: string;
+  };
+  __typename: string;
+};
+
+export type Character = {
+  id: string;
+  character: string;
+  gameCount: number;
+  __typename: string;
+};
+export type ScrapeResult = {
+  displayName: string;
+  connectCode: string;
+  rating: number;
+  wins: number;
+  losses: number;
+  dailyGlobalPlacement: number | undefined;
+  dailyRegionalPlacement: number | undefined;
+  characters: Character[];
+  rawResponse: SlippiUserProfilePage;
+};
+
 const query = `fragment userProfilePage on User {
   displayName
   connectCode {
@@ -35,7 +85,7 @@ query AccountManagementPageQuery($cc: String!) {
         }
 }`;
 
-function getBody(connectCode) {
+function getBody(connectCode: string) {
   return JSON.stringify({
     operationName: "AccountManagementPageQuery",
     query,
@@ -43,7 +93,7 @@ function getBody(connectCode) {
   });
 }
 
-export async function scrape(connectCode) {
+export async function scrape(connectCode: string) {
   const body = getBody(connectCode);
   const response = await fetch(
     "https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql",
@@ -59,12 +109,12 @@ export async function scrape(connectCode) {
   );
 
   if (response.ok) {
-    const json = await response.json();
-    const user = json.data.getConnectCode?.user;
+    const { data } = (await response.json()) as { data: SlippiQueryResponse };
+    const user = data.getConnectCode?.user;
     if (!user) return null;
 
     const netplayProfile = user.rankedNetplayProfile;
-    const userDeets = {
+    const userDeets: ScrapeResult = {
       displayName: user.displayName,
       connectCode: user.connectCode.code,
       rating: netplayProfile.ratingOrdinal,
@@ -73,11 +123,15 @@ export async function scrape(connectCode) {
       dailyGlobalPlacement: netplayProfile.dailyGlobalPlacement,
       dailyRegionalPlacement: netplayProfile.dailyRegionalPlacement,
       characters: netplayProfile.characters,
-      rawResponse: json.data.getConnectCode.user,
+      rawResponse: data.getConnectCode.user,
     };
 
     return userDeets;
   }
 
-  return response;
+  throw new Error(
+    `Bad response from Slippi: ${response.status} - ${JSON.stringify(
+      await response.json()
+    )}`
+  );
 }

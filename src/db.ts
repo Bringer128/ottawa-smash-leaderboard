@@ -1,6 +1,33 @@
-import Firestore from "@google-cloud/firestore";
+import {Firestore} from "@google-cloud/firestore";
+import { ScrapeResult } from "./scrape";
 
 const db = new Firestore();
+
+type CreateUserArgs = {
+  channelId: string,
+  guildId: string,
+  connectCode: string,
+  discordUser: {
+    username: string,
+    id: string,
+    guildNickname: string
+  },
+  requestId: string
+}
+
+type User = {
+  connectCode: string;
+  creationDetails: {
+      requestId: string;
+      channelId: string;
+      guildId: string;
+      user: {
+          discordUsername: string;
+          discordUserId: string;
+          guildNickname: string;
+      };
+  };
+}
 
 export async function createUser({
   channelId,
@@ -8,14 +35,14 @@ export async function createUser({
   connectCode,
   discordUser,
   requestId,
-}) {
+}: CreateUserArgs) {
   const {
     username: discordUsername,
     id: discordUserId,
     guildNickname,
   } = discordUser;
 
-  const user = {
+  const user: User = {
     connectCode,
     creationDetails: {
       requestId,
@@ -39,12 +66,17 @@ export async function listUsers() {
   return documentRefs.map((x) => x.id);
 }
 
-export async function removeUser(connectCode) {
+export async function removeUser(connectCode: string) {
   const userDocument = db.doc(`users/${connectCode}`);
   await userDocument.delete();
 }
 
-export async function writeResults(results) {
+export type PersistedResults = {
+  createdAt: number,
+  results: ScrapeResult[]
+}
+
+export async function writeResults(results: PersistedResults) {
   const resultsDoc = db.doc(`results/${results.createdAt}`);
   await resultsDoc.set(results);
 }
@@ -54,24 +86,28 @@ export async function readResults() {
   const snapshot = await collection.orderBy("createdAt", "desc").limit(2).get();
   if (snapshot.empty) throw "wtf";
   const results = snapshot.docs.map((doc) => doc.data());
-  return results;
+  return results as [PersistedResults, PersistedResults];
 }
 
-export async function writeLastMessages({ channelId, messageIds }) {
+type WriteLastMessagesArgs = {
+  channelId: string,
+  messageIds: string[]
+}
+export async function writeLastMessages({ channelId, messageIds }: WriteLastMessagesArgs) {
   const doc = db.doc(`discordMessages/${channelId}`);
   await doc.set({ messageIds });
 }
 
-export async function readLastMessages(channelId) {
+export async function readLastMessages(channelId: string) {
   const doc = db.doc(`discordMessages/${channelId}`);
   const snapshot = await doc.get();
-  return snapshot.data()?.messageIds;
+  return snapshot.data()?.messageIds as string[];
 }
 
-export async function getRegistrationDetails(connectCode) {
+export async function getRegistrationDetails(connectCode: string) {
   const userDocument = db.doc(`users/${connectCode}`);
   const snapshot = await userDocument.get();
   if (!snapshot.exists) return null;
-  const { creationDetails } = snapshot.data();
+  const { creationDetails } = snapshot.data() as User;
   return creationDetails;
 }

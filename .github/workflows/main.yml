@@ -1,4 +1,3 @@
-
 # This is a basic workflow to help you get started with Actions
 name: CD
 
@@ -37,9 +36,15 @@ jobs:
           # Replace with your GitHub Service Account
           service_account: "github-actions-service-account@ottawa-smash-discord-bot.iam.gserviceaccount.com"
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-        
-      - name: 'Deploy'
+      - name: "Set up Cloud SDK"
+        uses: "google-github-actions/setup-gcloud@v1"
+
+      - name: "Install"
+        run: npm install
+
+      - name: "Build"
+        run: npm run build
+
+      - name: "Deploy"
         run: ./deploy.sh
         shell: bash

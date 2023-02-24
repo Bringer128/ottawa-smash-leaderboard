@@ -2,7 +2,7 @@ import { hrtime } from "node:process";
 const startup = hrtime.bigint();
 let executedOnce = false;
 
-import functions from "@google-cloud/functions-framework";
+import functions, {Request, Response} from "@google-cloud/functions-framework";
 
 import { register } from "./register.js";
 import { recurringScrape } from "./recurring-scrape.js";
@@ -11,7 +11,7 @@ import { PubSub } from "@google-cloud/pubsub";
 import { getRegistrationDetails, removeUser } from "./db.js";
 import Discord from "./discord/Discord.js";
 
-async function auth(req, res, callback) {
+async function auth(req: Request, res: Response, callback: () => void) {
   const error = await discordAuth(req.headers, req.rawBody);
   if (error && error.code) {
     res.status(error.code);
@@ -28,7 +28,7 @@ async function auth(req, res, callback) {
   res.status(400).json({ error: `Unknown type: ${req.body.type}` });
 }
 
-async function triggerScrape(res) {
+async function triggerScrape(res: Response) {
   const pubsub = new PubSub();
   try {
     const messageId = await pubsub
@@ -42,7 +42,9 @@ async function triggerScrape(res) {
       },
     });
   } catch (error) {
-    console.error(`Received error while publishing: ${error.message}`);
+    if(error instanceof Error) {
+      console.error(`Received error while publishing: ${error.message}`);
+    }
     res.status(500).json({
       type: 4,
       data: {
@@ -52,7 +54,7 @@ async function triggerScrape(res) {
   }
 }
 
-async function deleteUser(req, res) {
+async function deleteUser(req: functions.Request, res: functions.Response) {
   const { member, data } = req.body;
   const connectCode = data.options[0].value.toUpperCase();
 
