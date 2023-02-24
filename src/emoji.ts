@@ -43,14 +43,14 @@ const emojis = [
   { id: "1059647333916233778", name: "BronzeIII" },
 ];
 
-function uniqueId(id, name) {
+function uniqueId(id:string, name:string) {
   return `<:${name}:${id}>`;
 }
 
 const globalEmojis = emojis.map(({ id, name }) => [name, uniqueId(id, name)]);
-const lookupByName = Object.fromEntries(globalEmojis);
+const lookupByName = Object.fromEntries(globalEmojis) as { [key: string]: string };
 
-export function getEmojiIdForName(name) {
+export function getEmojiIdForName(name: string) {
   const result = lookupByName[name];
   if (!result) console.log("Couldn't find emoji for name: " + name);
   return result;
