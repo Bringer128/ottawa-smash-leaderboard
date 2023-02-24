@@ -1,4 +1,5 @@
 import {Firestore} from "@google-cloud/firestore";
+import { ScrapeResult } from "./scrape";
 
 const db = new Firestore();
 
@@ -70,7 +71,7 @@ export async function removeUser(connectCode: string) {
   await userDocument.delete();
 }
 
-export async function writeResults(results: Results) {
+export async function writeResults(results: { createdAt: number, results: ScrapeResult[]}) {
   const resultsDoc = db.doc(`results/${results.createdAt}`);
   await resultsDoc.set(results);
 }
