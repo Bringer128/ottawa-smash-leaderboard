@@ -85,7 +85,7 @@ export async function readResults() {
 
 type WriteLastMessagesArgs = {
   channelId: string,
-  messageIds: [string]
+  messageIds: string[]
 }
 export async function writeLastMessages({ channelId, messageIds }: WriteLastMessagesArgs) {
   const doc = db.doc(`discordMessages/${channelId}`);
@@ -95,7 +95,7 @@ export async function writeLastMessages({ channelId, messageIds }: WriteLastMess
 export async function readLastMessages(channelId: string) {
   const doc = db.doc(`discordMessages/${channelId}`);
   const snapshot = await doc.get();
-  return snapshot.data()?.messageIds;
+  return snapshot.data()?.messageIds as string[];
 }
 
 export async function getRegistrationDetails(connectCode: string) {
