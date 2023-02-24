@@ -32,6 +32,23 @@ type SlippiUserProfilePage = {
 __typename: string
 }
 
+export type ScrapeResult = {
+  displayName: string;
+  connectCode: string;
+  rating: number;
+  wins: number;
+  losses: number;
+  dailyGlobalPlacement: number | undefined;
+  dailyRegionalPlacement: number | undefined;
+  characters: {
+    id: string
+    character: string
+    gameCount: number
+    __typename: string
+  };
+  rawResponse: SlippiUserProfilePage;
+}
+
 const query = `fragment userProfilePage on User {
   displayName
   connectCode {
