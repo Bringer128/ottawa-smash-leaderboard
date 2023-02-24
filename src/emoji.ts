@@ -41,14 +41,17 @@ const emojis = [
   { id: "1059647330149740626", name: "BronzeI" },
   { id: "1059647332498542682", name: "BronzeII" },
   { id: "1059647333916233778", name: "BronzeIII" },
+  { id: "1078545170133417985", name: "Grandmaster" },
 ];
 
-function uniqueId(id:string, name:string) {
+function uniqueId(id: string, name: string) {
   return `<:${name}:${id}>`;
 }
 
 const globalEmojis = emojis.map(({ id, name }) => [name, uniqueId(id, name)]);
-const lookupByName = Object.fromEntries(globalEmojis) as { [key: string]: string };
+const lookupByName = Object.fromEntries(globalEmojis) as {
+  [key: string]: string;
+};
 
 export function getEmojiIdForName(name: string) {
   const result = lookupByName[name];
