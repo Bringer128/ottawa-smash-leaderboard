@@ -26,7 +26,7 @@ type SlippiUserProfilePage = {
       character: string;
       gameCount: number;
       __typename: string;
-    };
+    }[];
     __typename: string;
   };
   __typename: string;
@@ -114,7 +114,7 @@ export async function scrape(connectCode: string) {
     if (!user) return null;
 
     const netplayProfile = user.rankedNetplayProfile;
-    const userDeets = {
+    const userDeets: ScrapeResult = {
       displayName: user.displayName,
       connectCode: user.connectCode.code,
       rating: netplayProfile.ratingOrdinal,
