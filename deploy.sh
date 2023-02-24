@@ -1,5 +1,8 @@
 #/bin/bash
 
+cp package.json dist
+cp package-lock.json dist
+
 gcloud functions deploy \
   register-function \
   --gen2 \
