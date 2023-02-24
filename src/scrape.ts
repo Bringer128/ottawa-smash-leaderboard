@@ -2,36 +2,42 @@ import fetch from "node-fetch";
 
 type SlippiQueryResponse = {
   getConnectCode: {
-    user: SlippiUserProfilePage
-    __typename: string
-  }
-}
+    user: SlippiUserProfilePage;
+    __typename: string;
+  };
+};
 type SlippiUserProfilePage = {
-  displayName: string
+  displayName: string;
   connectCode: {
-    code: string
-    __typename: string
-  }
+    code: string;
+    __typename: string;
+  };
   rankedNetplayProfile: {
-    id: string
-    ratingOrdinal: number
-    ratingUpdateCount: number
-    wins: number
-    losses: number
-    dailyGlobalPlacement?: number
-    dailyRegionalPlacement?: number
-    continent: string
+    id: string;
+    ratingOrdinal: number;
+    ratingUpdateCount: number;
+    wins: number;
+    losses: number;
+    dailyGlobalPlacement?: number;
+    dailyRegionalPlacement?: number;
+    continent: string;
     characters: {
-            id: string
-            character: string
-            gameCount: number
-            __typename: string
-          }
-    __typename: string
-  }
-__typename: string
-}
+      id: string;
+      character: string;
+      gameCount: number;
+      __typename: string;
+    };
+    __typename: string;
+  };
+  __typename: string;
+};
 
+export type Character = {
+  id: string;
+  character: string;
+  gameCount: number;
+  __typename: string;
+};
 export type ScrapeResult = {
   displayName: string;
   connectCode: string;
@@ -40,14 +46,9 @@ export type ScrapeResult = {
   losses: number;
   dailyGlobalPlacement: number | undefined;
   dailyRegionalPlacement: number | undefined;
-  characters: {
-    id: string
-    character: string
-    gameCount: number
-    __typename: string
-  };
+  characters: Character[];
   rawResponse: SlippiUserProfilePage;
-}
+};
 
 const query = `fragment userProfilePage on User {
   displayName
@@ -92,7 +93,7 @@ function getBody(connectCode: string) {
   });
 }
 
-export async function scrape(connectCode:string) {
+export async function scrape(connectCode: string) {
   const body = getBody(connectCode);
   const response = await fetch(
     "https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql",
@@ -108,7 +109,7 @@ export async function scrape(connectCode:string) {
   );
 
   if (response.ok) {
-    const {data} = await response.json() as { data: SlippiQueryResponse };
+    const { data } = (await response.json()) as { data: SlippiQueryResponse };
     const user = data.getConnectCode?.user;
     if (!user) return null;
 
@@ -128,5 +129,9 @@ export async function scrape(connectCode:string) {
     return userDeets;
   }
 
-  throw new Error(`Bad response from Slippi: ${response.status} - ${JSON.stringify(await response.json())}`)
+  throw new Error(
+    `Bad response from Slippi: ${response.status} - ${JSON.stringify(
+      await response.json()
+    )}`
+  );
 }

@@ -17,13 +17,13 @@ const ranges = [
   ["Master I", 2191.75, 2274.99],
   ["Master II", 2275, 2350],
   ["Master III", 2350, Infinity],
-];
+] as [string, number, number][];
 
 export function getRank(
-  numGames,
-  rating,
-  dailyGlobalPlacement,
-  dailyRegionalPlacement
+  numGames: number,
+  rating: number,
+  dailyGlobalPlacement?: number,
+  dailyRegionalPlacement?: number
 ) {
   if (numGames === 0) return "None";
   if (numGames < 5) return "Pending";
@@ -34,9 +34,9 @@ export function getRank(
     return "Grandmaster";
   }
 
-  return ranges.reduce((foundRank, [rank, min, max]) => {
-    if (foundRank !== "Unknown") return foundRank;
+  for (const [rank, min, max] of ranges) {
     if (min < rating && rating < max) return rank;
-    return foundRank;
-  }, "Unknown");
+  }
+
+  return "Unknown";
 }

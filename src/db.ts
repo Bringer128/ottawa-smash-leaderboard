@@ -71,7 +71,12 @@ export async function removeUser(connectCode: string) {
   await userDocument.delete();
 }
 
-export async function writeResults(results: { createdAt: number, results: ScrapeResult[]}) {
+export type PersistedResults = {
+  createdAt: number,
+  results: ScrapeResult[]
+}
+
+export async function writeResults(results: PersistedResults) {
   const resultsDoc = db.doc(`results/${results.createdAt}`);
   await resultsDoc.set(results);
 }
@@ -81,7 +86,7 @@ export async function readResults() {
   const snapshot = await collection.orderBy("createdAt", "desc").limit(2).get();
   if (snapshot.empty) throw "wtf";
   const results = snapshot.docs.map((doc) => doc.data());
-  return results;
+  return results as [PersistedResults, PersistedResults];
 }
 
 type WriteLastMessagesArgs = {
