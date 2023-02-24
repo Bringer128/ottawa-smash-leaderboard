@@ -9,8 +9,18 @@ function rankToEmoji(rank: string) {
   return getEmojiIdForName(nospaces);
 }
 
-function ratingToEmoji(rating: number) {
-  const rank = getRank(6, rating);
+function ratingToEmoji(
+  rating: number,
+  ratingUpdateCount: number,
+  dailyGlobalPlacement?: number,
+  dailyRegionalPlacement?: number
+) {
+  const rank = getRank(
+    ratingUpdateCount,
+    rating,
+    dailyGlobalPlacement,
+    dailyRegionalPlacement
+  );
   return rankToEmoji(rank);
 }
 
@@ -39,6 +49,13 @@ function formatRow(
     connectCode,
     characters,
     rating,
+    rawResponse: {
+      rankedNetplayProfile: {
+        ratingUpdateCount,
+        dailyGlobalPlacement,
+        dailyRegionalPlacement,
+      },
+    },
     wins,
     losses,
     changes: { indexChange, ratingChange },
@@ -54,7 +71,12 @@ function formatRow(
   const nameChunk = `${displayName} (${connectCode})`;
   const characterChunk = formatCharacters(characters);
   const winLossChunk = `${wins}W/${losses}L`;
-  let ratingChunk = `${ratingToEmoji(rating)} ${Math.floor(rating)}`;
+  let ratingChunk = `${ratingToEmoji(
+    rating,
+    ratingUpdateCount,
+    dailyGlobalPlacement,
+    dailyRegionalPlacement
+  )} ${Math.floor(rating)}`;
   if (ratingChange.number !== 0) {
     const up = ratingChange.number > 0;
     const number = Math.floor(Math.abs(ratingChange.number));
