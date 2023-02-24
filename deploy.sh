@@ -5,7 +5,7 @@ gcloud functions deploy \
   --gen2 \
   --runtime=nodejs16 \
   --region=us-east1 \
-  --source=. \
+  --source=dist \
   --entry-point=register \
   --trigger-http \
   --allow-unauthenticated \
@@ -16,7 +16,7 @@ gcloud functions deploy \
   --gen2 \
   --runtime=nodejs16 \
   --region=us-east1 \
-  --source=. \
+  --source=dist \
   --entry-point=recurring-scrape \
   --trigger-topic=daily-scrape \
   --allow-unauthenticated \
