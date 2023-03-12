@@ -22,7 +22,7 @@ const emojis = [
   { id: "1059353742866128976", name: "ice_climbers" },
   { id: "1059353779885064272", name: "bowser" },
   { id: "1059353781206261780", name: "donkey_kong" },
-  { id: "1059353782393253898", name: "drmario" },
+  { id: "1059353782393253898", name: "dr_mario" },
   { id: "1059353783311814656", name: "falco" },
   { id: "1059354906361872446", name: "captain_falcon" },
   { id: "1059647074477551616", name: "SilverI" },
