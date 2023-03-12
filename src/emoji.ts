@@ -32,6 +32,7 @@ const emojis = [
   { id: "1059647104584273950", name: "PlatinumII" },
   { id: "1059647106018726059", name: "PlatinumIII" },
   { id: "1059647214835740692", name: "MasterI" },
+  { id: "1084274532665262160", name: "MasterII" },
   { id: "1059647262785028107", name: "GoldI" },
   { id: "1059647264718589993", name: "GoldII" },
   { id: "1059647266266300527", name: "GoldIII" },
