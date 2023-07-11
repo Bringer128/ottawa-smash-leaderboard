@@ -13,7 +13,7 @@
     "register": "functions-framework --target=register --source=dist",
     "defineCommands": "node dist/define-commands.js",
     "scrape": "node --trace-uncaught dist/run-scrape.js",
-    "build": "tsc"
+    "build": "tsc --build --verbose"
   },
   "devDependencies": {
     "typescript": "^5.1.6"
