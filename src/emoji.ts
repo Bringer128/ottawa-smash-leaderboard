@@ -43,6 +43,7 @@ const emojis = [
   { id: "1059647332498542682", name: "BronzeII" },
   { id: "1059647333916233778", name: "BronzeIII" },
   { id: "1078545170133417985", name: "Grandmaster" },
+  { id: "1133094737222582533", name: "None" },
 ];
 
 function uniqueId(id: string, name: string) {

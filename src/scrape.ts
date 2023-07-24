@@ -42,8 +42,8 @@ export type ScrapeResult = {
   displayName: string;
   connectCode: string;
   rating: number;
-  wins: number;
-  losses: number;
+  wins: number | null;
+  losses: number | null;
   dailyGlobalPlacement: number | undefined;
   dailyRegionalPlacement: number | undefined;
   characters: Character[];

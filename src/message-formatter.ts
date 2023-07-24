@@ -70,6 +70,8 @@ function formatRow(
   }
   const nameChunk = `${displayName} (${connectCode})`;
   const characterChunk = formatCharacters(characters);
+  wins = wins || 0;
+  losses = losses || 0;
   const winLossChunk = `${wins}W/${losses}L`;
   let ratingChunk = `${ratingToEmoji(
     rating,
