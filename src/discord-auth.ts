@@ -30,7 +30,7 @@ export async function discordAuth(
   }
 
   try {
-    const isValid = await verifyAsync(
+    const isValid = verify(
       signature,
       Buffer.from(`${timestamp}${rawBody}`),
       PUBLIC_KEY
