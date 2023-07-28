@@ -1,5 +1,8 @@
-import { verifyAsync } from "@noble/ed25519";
+import { sha512 } from "@noble/hashes/sha512";
+import { verify, etc } from "@noble/ed25519";
 import { IncomingHttpHeaders } from "http";
+
+etc.sha512Sync = (...m) => sha512(etc.concatBytes(...m));
 
 const PUBLIC_KEY =
   "b0888227e1c0f3c97c8f8376187c7de0d8cb96a0db7fd3281f6dcdafd9597b49";
