@@ -111,11 +111,27 @@ type ResultsWithChanges = ScrapeResult & {
   };
 };
 
+function splitOutNoMatches(singleResults: ScrapeResult[]) {
+  const toReturn = {
+    hasMatches: [] as ScrapeResult[],
+    noMatches: [] as ScrapeResult[],
+  };
+
+  singleResults.forEach((result) => {
+    const hasMatches = !!(result.wins || result.losses);
+    const arr = hasMatches ? toReturn.hasMatches : toReturn.noMatches;
+    arr.push(result);
+  });
+  return toReturn;
+}
+
 function formatToMessagesWithChanges(
   singleResults: ScrapeResult[],
   changes: OverallChanges
 ) {
-  const lines = singleResults
+  const reuslts = splitOutNoMatches(singleResults);
+
+  const lines = reuslts.hasMatches
     .map((result) => ({
       ...result,
       changes: changes.changesByConnectCode[result.connectCode],
@@ -123,6 +139,12 @@ function formatToMessagesWithChanges(
     .map((resultWithChanges: ResultsWithChanges, index) =>
       formatRow(resultWithChanges, index)
     );
+
+  lines.push("Connect codes with no results yet:");
+  const noMatchConnectCodes = reuslts.noMatches
+    .map((result) => result.connectCode)
+    .join(", ");
+  lines.push(noMatchConnectCodes);
 
   const timeChange = changes.timeChangeMs;
   const timeHours = (timeChange.number * 1.0) / 1000 / 60 / 60;
