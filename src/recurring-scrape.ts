@@ -19,7 +19,9 @@ export async function recurringScrape(_cloudEvent?: CloudEvent<unknown>) {
     let result: ScrapeResult | null = null;
     try {
       result = await scrape(connectCode);
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
     if (result) {
       results.push(result);
     } else {
