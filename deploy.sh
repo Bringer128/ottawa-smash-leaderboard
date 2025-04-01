@@ -6,7 +6,7 @@ cp package-lock.json dist
 gcloud functions deploy \
   register-function \
   --gen2 \
-  --runtime=nodejs16 \
+  --runtime=nodejs22 \
   --region=us-east1 \
   --source=dist \
   --entry-point=register \
@@ -17,7 +17,7 @@ gcloud functions deploy \
 gcloud functions deploy \
   recurring-scrape \
   --gen2 \
-  --runtime=nodejs16 \
+  --runtime=nodejs22 \
   --region=us-east1 \
   --source=dist \
   --entry-point=recurring-scrape \
