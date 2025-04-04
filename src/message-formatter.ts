@@ -127,7 +127,8 @@ function splitOutNoMatches(singleResults: ScrapeResult[]) {
 
 function formatToMessagesWithChanges(
   singleResults: ScrapeResult[],
-  changes: OverallChanges
+  changes: OverallChanges,
+  invalidCodes?: string[]
 ) {
   const reuslts = splitOutNoMatches(singleResults);
 
@@ -145,6 +146,11 @@ function formatToMessagesWithChanges(
     .map((result) => result.connectCode)
     .join(", ");
   lines.push(noMatchConnectCodes);
+
+  if (invalidCodes && invalidCodes.length > 0) {
+    lines.push("\nInvalid connect codes (these should be removed):");
+    lines.push(invalidCodes.join(", "));
+  }
 
   const timeChange = changes.timeChangeMs;
   const timeHours = (timeChange.number * 1.0) / 1000 / 60 / 60;
@@ -255,5 +261,5 @@ export function formatToMessages(
   results: [PersistedResults, PersistedResults]
 ) {
   const changes = computeChangesToRankAndELO(results);
-  return formatToMessagesWithChanges(results[0].results, changes);
+  return formatToMessagesWithChanges(results[0].results, changes, results[0].invalidCodes);
 }

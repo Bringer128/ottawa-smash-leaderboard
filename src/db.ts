@@ -1,4 +1,4 @@
-import {Firestore} from "@google-cloud/firestore";
+import { Firestore } from "@google-cloud/firestore";
 import { ScrapeResult } from "./scrape";
 
 const db = new Firestore();
@@ -18,14 +18,14 @@ type CreateUserArgs = {
 type User = {
   connectCode: string;
   creationDetails: {
-      requestId: string;
-      channelId: string;
-      guildId: string;
-      user: {
-          discordUsername: string;
-          discordUserId: string;
-          guildNickname: string;
-      };
+    requestId: string;
+    channelId: string;
+    guildId: string;
+    user: {
+      discordUsername: string;
+      discordUserId: string;
+      guildNickname: string;
+    };
   };
 }
 
@@ -73,7 +73,8 @@ export async function removeUser(connectCode: string) {
 
 export type PersistedResults = {
   createdAt: number,
-  results: ScrapeResult[]
+  results: ScrapeResult[],
+  invalidCodes?: string[]
 }
 
 export async function writeResults(results: PersistedResults) {
