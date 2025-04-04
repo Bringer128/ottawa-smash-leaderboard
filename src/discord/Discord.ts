@@ -44,6 +44,11 @@ class Discord {
     return (permissions & manageGuild) === manageGuild;
   }
 
+  static hasKickMembersPermission(permissions: number) {
+    const kickMembers = 1 << 1;
+    return (permissions & kickMembers) === kickMembers;
+  }
+
   async createMessage(content: string) {
     if (content.length > 2000) throw "Content too large";
 

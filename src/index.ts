@@ -61,12 +61,10 @@ async function deleteUser(req: functions.Request, res: functions.Response) {
   console.log(
     `deleteUser requested by: ${member.user.id}, ${member.user.username}`
   );
-  console.log(`Permissions value received: ${member.permissions}`);
-  const canManageGuild = Discord.hasManageGuildPermissions(member.permissions);
-  console.log(`Can manage guild: ${canManageGuild}`);
+  const canKickMembers = Discord.hasKickMembersPermission(member.permissions);
   let message = null,
     shouldRemove = false;
-  if (canManageGuild) {
+  if (canKickMembers) {
     message = `Mod removed user with code: ${connectCode}`;
     shouldRemove = true;
   } else {
