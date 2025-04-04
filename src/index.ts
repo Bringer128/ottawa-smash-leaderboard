@@ -65,7 +65,7 @@ async function deleteUser(req: functions.Request, res: functions.Response) {
   let message = null,
     shouldRemove = false;
   if (canKickMembers) {
-    message = `Mod removed user with code: ${connectCode}`;
+    message = `Mod <@${member.user.id}> removed user with code: ${connectCode}`;
     shouldRemove = true;
   } else {
     const details = await getRegistrationDetails(connectCode);
@@ -75,10 +75,10 @@ async function deleteUser(req: functions.Request, res: functions.Response) {
       const requestingUserId = member.user.id;
       const discordId = details.user.discordUserId;
       if (requestingUserId === discordId) {
-        message = `User: ${requestingUserId} removed ${connectCode} - they added it`;
+        message = `User: <@${requestingUserId}> removed ${connectCode} - they added it`;
         shouldRemove = true;
       } else {
-        message = `User: ${requestingUserId} attempted to remove code ${connectCode} but they did not add it`;
+        message = `User: <@${requestingUserId}> attempted to remove code ${connectCode} but they did not add it`;
       }
     }
   }
