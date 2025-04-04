@@ -33,7 +33,7 @@ async function triggerScrape(res: Response) {
   try {
     const messageId = await pubsub
       .topic("daily-scrape")
-      .publishMessage({ data: Buffer.from("foo") });
+      .publishMessage({ json: { data: "foo" } });
     console.log(`Message ${messageId} published.`);
     res.status(201).json({
       type: 4,
