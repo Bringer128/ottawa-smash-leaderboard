@@ -66,7 +66,6 @@ const query = `fragment userProfilePage on User {
           dailyRegionalPlacement
           continent
           characters {
-                  id
                   character
                   gameCount
                   __typename
@@ -122,7 +121,10 @@ export async function scrape(connectCode: string) {
       losses: netplayProfile.losses,
       dailyGlobalPlacement: netplayProfile.dailyGlobalPlacement,
       dailyRegionalPlacement: netplayProfile.dailyRegionalPlacement,
-      characters: netplayProfile.characters,
+      characters: netplayProfile.characters.map(char => ({
+        ...char,
+        id: `char-${char.character.toLowerCase()}`
+      })),
       rawResponse: data.getConnectCode.user,
     };
 
