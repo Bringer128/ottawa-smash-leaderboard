@@ -2,7 +2,7 @@ import { hrtime } from "node:process";
 const startup = hrtime.bigint();
 let executedOnce = false;
 
-import functions, {Request, Response} from "@google-cloud/functions-framework";
+import functions, { Request, Response } from "@google-cloud/functions-framework";
 
 import { register } from "./register.js";
 import { recurringScrape } from "./recurring-scrape.js";
@@ -42,7 +42,7 @@ async function triggerScrape(res: Response) {
       },
     });
   } catch (error) {
-    if(error instanceof Error) {
+    if (error instanceof Error) {
       console.error(`Received error while publishing: ${error.message}`);
     }
     res.status(500).json({
@@ -61,7 +61,9 @@ async function deleteUser(req: functions.Request, res: functions.Response) {
   console.log(
     `deleteUser requested by: ${member.user.id}, ${member.user.username}`
   );
+  console.log(`Permissions value received: ${member.permissions}`);
   const canManageGuild = Discord.hasManageGuildPermissions(member.permissions);
+  console.log(`Can manage guild: ${canManageGuild}`);
   let message = null,
     shouldRemove = false;
   if (canManageGuild) {
