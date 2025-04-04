@@ -7,7 +7,7 @@
     "@noble/curves": "^1.1.0",
     "@noble/ed25519": "^2.0.0",
     "limiter": "2.0.1",
-    "node-fetch": "^3.3.1"
+    "node-fetch": "^3.3.2"
   },
   "scripts": {
     "setup-auth": "gcloud auth application-default login --impersonate-service-account=functions-service-account@ottawa-smash-discord-bot.iam.gserviceaccount.com",
