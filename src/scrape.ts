@@ -50,71 +50,44 @@ export type ScrapeResult = {
   rawResponse: SlippiUserProfilePage;
 };
 
-const query = `
-      fragment userProfilePage on User{
-         fbUid
-          displayName
-          connectCode {
-             code
-           }
-        status
-        activeSubscription {
-            level
-            hasGiftSub
-        }
-        rankedNetplayProfile {
-            id
-            ratingOrdinal
-            ratingUpdateCount
-            wins
-            losses
-            dailyGlobalPlacement
-            dailyRegionalPlacement
-           continent
-           characters {
-              character
-                gameCount
-            }
-        }
-            
-`;
-
-/*const query = `fragment userProfilePage on User {
+const query = String.raw`
+fragment userProfilePage on User {
   displayName
   connectCode {
-        code
-        __typename
-      }
-    rankedNetplayProfile {
-          id
-          ratingOrdinal
-          ratingUpdateCount
-          wins
-          losses
-          dailyGlobalPlacement
-          dailyRegionalPlacement
-          continent
-          characters {
-                  character
-                  gameCount
-                  __typename
-                }
-          __typename
-        }
+    code
     __typename
+  }
+  rankedNetplayProfile {
+    id
+    ratingOrdinal
+    ratingUpdateCount
+    wins
+    losses
+    dailyGlobalPlacement
+    dailyRegionalPlacement
+    continent
+    characters {
+      character
+      gameCount
+      __typename
+    }
+    __typename
+  }
+  __typename
 }
+
 query AccountManagementPageQuery($cc: String!) {
-    getConnectCode(code: $cc) {
-          user {
-                  ...userProfilePage
-                  __typename
-                }
-          __typename
-        }
+  getConnectCode(code: $cc) {
+    user {
+      ...userProfilePage
+    }
+  }
 }`;
-*/
+
+
 
 function getBody(connectCode: string) {
+  console.log("Outgoing GraphQL Query:\n", query);
   return JSON.stringify({
     operationName: "AccountManagementPageQuery",
     query,
@@ -128,9 +101,9 @@ export async function scrape(connectCode: string) {
     "https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql",
     {
       headers: {
-        "cache-control": "no-cache",
+        // "cache-control": "no-cache",
         "content-type": "application/json",
-        pragma: "no-cache",
+        // pragma: "no-cache",
       },
       body: body,
       method: "POST",
