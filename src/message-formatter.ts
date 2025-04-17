@@ -85,10 +85,10 @@ function formatRow(
     ratingChunk += `(${up ? "+" : "-"}${number})`;
   }
 
-  return `${positionChunk} ${nameChunk} - ${characterChunk} - ${winLossChunk} ${ratingChunk}`;
+  return `${positionChunk} ${nameChunk} ${characterChunk} ${winLossChunk} ${ratingChunk}`;
 }
 
-function linesToMessages(lines: string[]) {
+/*function linesToMessages(lines: string[]) {
   let currentMessage = "";
   const messages = [];
   for (let line of lines) {
@@ -102,7 +102,29 @@ function linesToMessages(lines: string[]) {
   }
   if (currentMessage !== "") messages.push(currentMessage);
   return messages;
+}*/
+function linesToMessages(lines: string[]) {
+  const EMBED_CHAR_LIMIT = 4000;
+
+  const messages = [];
+  let currentMessage = "";
+
+  for (let line of lines) {
+    if ((currentMessage.length + line.length + 1) < EMBED_CHAR_LIMIT) {
+      currentMessage += (currentMessage ? "\n" : "") + line;
+    } else {
+      messages.push(currentMessage);
+      currentMessage = line;
+    }
+  }
+
+  if (currentMessage) {
+    messages.push(currentMessage);
+  }
+
+  return messages;
 }
+
 
 type ResultsWithChanges = ScrapeResult & {
   changes: {

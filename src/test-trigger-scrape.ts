@@ -1,5 +1,6 @@
 import { triggerScrape } from "./index.js";
 
+// Mock Response object with logging
 const res = {
   status(code: number) {
     console.log(`Status: ${code}`);
@@ -11,4 +12,7 @@ const res = {
   },
 } as any;
 
-triggerScrape(res);
+// Run it
+triggerScrape(res).catch(err => {
+  console.error("❌ Error in triggerScrape:", err);
+});
