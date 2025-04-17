@@ -18,7 +18,37 @@ export async function editLastDiscordMessages() {
   const lastMessageId = await discord.getLastMessageInChannel();
 
   const results = await readResults();
+
+
+
+
+
+  // Embed Test
+
   const messages = formatToMessages(results);
+
+  const fullLeaderboard = messages.join("\n");
+  const safeText = fullLeaderboard.slice(0, 4096); // Discord embed limit
+
+  const embed = {
+    title: "🏆 Ottawa Smash Leaderboard",
+    description: safeText,
+    color: 0xffcc00,
+    timestamp: new Date().toISOString(),
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
   const lastMessages = await readLastMessages(channelId);
 
   if (
@@ -27,8 +57,20 @@ export async function editLastDiscordMessages() {
     lastMessages.includes(lastMessageId) &&
     lastMessages.length == messages.length
   ) {
+
+
+
+
+
+
+
+
+
+
+
+    // Embed Test
     // We can edit
-    const updates = lastMessages.map((id, index) => ({
+    /*const updates = lastMessages.map((id, index) => ({
       id,
       content: messages[index],
     }));
@@ -37,15 +79,77 @@ export async function editLastDiscordMessages() {
       await limiter.removeTokens(1);
       discord.editMessage(id, content);
     }
-  } else {
+  } */
+    const embeds = messages.map((msg, i) => ({
+      title: i === 0 ? "🏆 Ottawa Smash Leaderboard" : undefined,
+      description: msg,
+      color: 0xffcc00,
+    }));
+
+    /*for (let i = 0; i < lastMessages.length; i++) {
+      await limiter.removeTokens(1);
+      await discord.editMessage(lastMessages[i], { embeds: [embeds[i]] });
+    }*/
+    await limiter.removeTokens(1);
+    await discord.editMessage(lastMessageId, { embeds: [embed] });
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+  else {
     // We must create - we're not the latest, or the number of messages has changed
     // so we can't just go back and edit them.
-    const ids = [];
-    for (let message of messages) {
-      await limiter.removeTokens(1);
-      const id = await discord.createMessage(message);
-      ids.push(id);
-    }
+    //const ids = [];
+
+
+
+
+
+
+
+
+
+
+    // Embed Test
+
+    /* for (let message of messages) {
+       await limiter.removeTokens(1);
+       const id = await discord.createMessage(message);
+       ids.push(id);
+     }
+ */
+
+    await limiter.removeTokens(1);
+    const id = await discord.createMessage({ embeds: [embed] });
+    const ids = [id];
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     await writeLastMessages({ channelId, messageIds: ids });
   }
 }
