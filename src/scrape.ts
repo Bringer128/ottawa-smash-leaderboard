@@ -50,7 +50,37 @@ export type ScrapeResult = {
   rawResponse: SlippiUserProfilePage;
 };
 
-const query = `fragment userProfilePage on User {
+const query = `
+    query {
+      fragment userProfilePage on User{
+         fbUid
+          displayName
+          connectCode {
+             code
+           }
+        status
+        activeSubscription {
+            level
+            hasGiftSub
+        }
+        rankedNetplayProfile {
+            id
+            ratingOrdinal
+            ratingUpdateCount
+            wins
+            losses
+            dailyGlobalPlacement
+            dailyRegionalPlacement
+           continent
+           characters {
+              character
+                gameCount
+            }
+        }
+            
+}`;
+
+/*const query = `fragment userProfilePage on User {
   displayName
   connectCode {
         code
@@ -83,6 +113,7 @@ query AccountManagementPageQuery($cc: String!) {
           __typename
         }
 }`;
+*/
 
 function getBody(connectCode: string) {
   return JSON.stringify({
