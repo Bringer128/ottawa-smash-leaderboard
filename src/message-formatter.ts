@@ -221,24 +221,24 @@ function computeChangesToRankAndELO(
   );
 
   // Then, get the changes
-  const changes = merged.map(
-    ([connectCode, { latest, previous }]) =>
-      [
-        connectCode,
-        {
-          ratingChange: {
-            number: latest.rating - previous.rating,
-            old: previous.rating,
-            new: latest.rating,
-          },
-          indexChange: {
-            number: latest.index - previous.index,
-            old: previous.index,
-            new: latest.index,
-          },
+  const changes = merged
+    .filter(([, v]) => v?.latest && v?.previous)
+    .map(([connectCode, { latest, previous }]) => [
+      connectCode,
+      {
+        ratingChange: {
+          number: latest.rating - previous.rating,
+          old: previous.rating,
+          new: latest.rating,
         },
-      ] as [string, { ratingChange: Change; indexChange: Change }]
-  );
+        indexChange: {
+          number: latest.index - previous.index,
+          old: previous.index,
+          new: latest.index,
+        },
+      },
+    ]) as [string, { ratingChange: Change; indexChange: Change }][];
+
 
   const changesByConnectCode = Object.fromEntries(changes) as {
     [k: string]: {

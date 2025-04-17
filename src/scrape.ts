@@ -51,7 +51,6 @@ export type ScrapeResult = {
 };
 
 const query = `
-    query {
       fragment userProfilePage on User{
          fbUid
           displayName
@@ -78,7 +77,7 @@ const query = `
             }
         }
             
-}`;
+`;
 
 /*const query = `fragment userProfilePage on User {
   displayName
