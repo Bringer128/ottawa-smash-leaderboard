@@ -49,7 +49,19 @@ class Discord {
     return (permissions & kickMembers) === kickMembers;
   }
 
-  async createMessage(content: string) {
+
+
+
+
+
+
+
+
+
+
+  // Embed Test
+
+  /**async createMessage(content: string) {
     if (content.length > 2000) throw "Content too large";
 
     const url = `https://discord.com/api/v10/channels/${this.channel}/messages`;
@@ -68,9 +80,34 @@ class Discord {
     const json = await response.json() as MessagePostResponse;
     const { id } = json;
     return id;
+  }*/
+  async createMessage(payload: string | { embeds: any[] }) {
+    let body;
+    if (typeof payload === "string") {
+      if (payload.length > 2000) throw "Content too large";
+      body = { content: payload };
+    } else {
+      body = payload;
+    }
+
+    const url = `https://discord.com/api/v10/channels/${this.channel}/messages`;
+    const headers = {
+      Authorization: `Bot ${this.apiToken}`,
+      "Content-Type": "application/json",
+    };
+    const response = await fetch(url, {
+      headers,
+      method: "POST",
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) throw `Bad response: ${response.status}`;
+    const json = await response.json() as MessagePostResponse;
+    return json.id;
   }
 
-  async editMessage(id: string, content: string) {
+
+  /*async editMessage(id: string, content: string) {
     const url = `https://discord.com/api/v10/channels/${this.channel}/messages/${id}`;
     const headers = {
       Authorization: `Bot ${this.apiToken}`,
@@ -82,7 +119,51 @@ class Discord {
       body: JSON.stringify({ content }),
     });
     const json = await response.json();
+  }*/
+
+  async editMessage(id: string, payload: string | { embeds: any[] }) {
+    let body;
+    if (typeof payload === "string") {
+      if (payload.length > 2000) throw "Content too large";
+      body = { content: payload };
+    } else {
+      body = payload;
+    }
+
+    const url = `https://discord.com/api/v10/channels/${this.channel}/messages/${id}`;
+    const headers = {
+      Authorization: `Bot ${this.apiToken}`,
+      "Content-Type": "application/json",
+    };
+    const response = await fetch(url, {
+      headers,
+      method: "PATCH",
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error(`Failed to edit message ${id}:`, error);
+      throw `Bad response while editing: ${response.status}`;
+    }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   async getLastMessageInChannel() {
     const url = `https://discord.com/api/v10/channels/${this.channel}`;

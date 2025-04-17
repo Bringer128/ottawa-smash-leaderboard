@@ -14,9 +14,12 @@
     "register": "functions-framework --target=register --source=dist",
     "defineCommands": "node dist/define-commands.js",
     "scrape": "node --trace-uncaught dist/run-scrape.js",
-    "build:not-on-gcp": "tsc"
+    "build:not-on-gcp": "tsc",
+    "test-embed": "ts-node --project tsconfig.node.json src/test-trigger-scrape.ts"
   },
   "devDependencies": {
-    "typescript": "^5.2.2"
+    "@types/node": "^20.11.19",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
   }
 }
