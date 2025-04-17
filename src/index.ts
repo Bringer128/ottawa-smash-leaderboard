@@ -54,31 +54,7 @@ async function auth(req: Request, res: Response, callback: () => void) {
   }
 }*/
 
-/*export async function triggerScrape(res: Response) {
-  // Just send a test embed — no PubSub, no scraping
-  const discord = new Discord({
-    channel: "1058962408749682698",
-    apiToken: process.env.BOT_TOKEN!,
-  });
-  const embed = {
-    title: "✅ Test Embed",
-    description: "This message was sent directly from `triggerScrape()`!",
-    color: 0x00ff00,
-  };
-  const messageId = await discord.createMessage({ embeds: [embed] });
-  res.status(200).json({
-    type: 4,
-    data: {
-      embeds: [
-        {
-          title: "✅ Embed Test",
-          description: "If you're seeing this, Discord embeds are working!",
-          color: 0x00ff00, // bright green
-        },
-      ],
-    },
-  });
-}*/
+
 export async function triggerScrape(res: Response) {
   const pubsub = new PubSub();
   try {
@@ -94,7 +70,7 @@ export async function triggerScrape(res: Response) {
     });
 
     const embed = {
-      title: "📡 Scrape Triggered",
+      title: "📡 Leaderboard Requested!",
       description: "Slippi stats are being fetched. This may take a few seconds...",
       color: 0x3498db, // blue
       timestamp: new Date().toISOString(),
