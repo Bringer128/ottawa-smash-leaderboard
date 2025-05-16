@@ -1,15 +1,20 @@
 import fetch from "node-fetch";
 
 type SlippiQueryResponse = {
-  getConnectCode: {
-    user: SlippiUserProfilePage;
-    __typename: string;
-  };
+  getUser: SlippiUserProfilePage;
 };
+
 type SlippiUserProfilePage = {
+  fbUid: string;
   displayName: string;
   connectCode: {
     code: string;
+    __typename: string;
+  };
+  status: string;
+  activeSubscription: {
+    level: string;
+    hasGiftSub: boolean;
     __typename: string;
   };
   rankedNetplayProfile: {
@@ -22,13 +27,36 @@ type SlippiUserProfilePage = {
     dailyRegionalPlacement?: number;
     continent: string;
     characters: {
-      id: string;
       character: string;
       gameCount: number;
       __typename: string;
     }[];
     __typename: string;
   };
+  rankedNetplayProfileHistory: {
+    id: string;
+    ratingOrdinal: number;
+    ratingUpdateCount: number;
+    wins: number;
+    losses: number;
+    dailyGlobalPlacement?: number;
+    dailyRegionalPlacement?: number;
+    continent: string;
+    characters: {
+      character: string;
+      gameCount: number;
+      __typename: string;
+    }[];
+    season: {
+      id: string;
+      startedAt: string;
+      endedAt: string;
+      name: string;
+      status: string;
+      __typename: string;
+    };
+    __typename: string;
+  }[];
   __typename: string;
 };
 
@@ -38,6 +66,7 @@ export type Character = {
   gameCount: number;
   __typename: string;
 };
+
 export type ScrapeResult = {
   displayName: string;
   connectCode: string;
@@ -51,24 +80,48 @@ export type ScrapeResult = {
 };
 
 const query = String.raw`
+fragment profileFields on NetplayProfile {
+  id
+  ratingOrdinal
+  ratingUpdateCount
+  wins
+  losses
+  dailyGlobalPlacement
+  dailyRegionalPlacement
+  continent
+  characters {
+    character
+    gameCount
+    __typename
+  }
+  __typename
+}
+
 fragment userProfilePage on User {
+  fbUid
   displayName
   connectCode {
     code
     __typename
   }
+  status
+  activeSubscription {
+    level
+    hasGiftSub
+    __typename
+  }
   rankedNetplayProfile {
-    id
-    ratingOrdinal
-    ratingUpdateCount
-    wins
-    losses
-    dailyGlobalPlacement
-    dailyRegionalPlacement
-    continent
-    characters {
-      character
-      gameCount
+    ...profileFields
+    __typename
+  }
+  rankedNetplayProfileHistory {
+    ...profileFields
+    season {
+      id
+      startedAt
+      endedAt
+      name
+      status
       __typename
     }
     __typename
@@ -76,34 +129,29 @@ fragment userProfilePage on User {
   __typename
 }
 
-query AccountManagementPageQuery($cc: String!) {
-  getConnectCode(code: $cc) {
-    user {
-      ...userProfilePage
-    }
+query UserProfilePageQuery($cc: String, $uid: String) {
+  getUser(fbUid: $uid, connectCode: $cc) {
+    ...userProfilePage
+    __typename
   }
 }`;
-
-
 
 function getBody(connectCode: string) {
   console.log("Outgoing GraphQL Query:\n", query);
   return JSON.stringify({
-    operationName: "AccountManagementPageQuery",
-    query,
-    variables: { cc: connectCode },
+    operationName: "UserProfilePageQuery",
+    variables: { cc: connectCode, uid: connectCode },
+    query: query,
   });
 }
 
 export async function scrape(connectCode: string) {
   const body = getBody(connectCode);
   const response = await fetch(
-    "https://gql-gateway-dot-slippi.uc.r.appspot.com/graphql",
+    "https://internal.slippi.gg/graphql",
     {
       headers: {
-        // "cache-control": "no-cache",
         "content-type": "application/json",
-        // pragma: "no-cache",
       },
       body: body,
       method: "POST",
@@ -112,7 +160,7 @@ export async function scrape(connectCode: string) {
 
   if (response.ok) {
     const { data } = (await response.json()) as { data: SlippiQueryResponse };
-    const user = data.getConnectCode?.user;
+    const user = data.getUser;
     if (!user) return null;
 
     const netplayProfile = user.rankedNetplayProfile;
@@ -128,7 +176,7 @@ export async function scrape(connectCode: string) {
         ...char,
         id: `char-${char.character.toLowerCase()}`
       })),
-      rawResponse: data.getConnectCode.user,
+      rawResponse: user,
     };
 
     return userDeets;
@@ -136,7 +184,7 @@ export async function scrape(connectCode: string) {
 
   throw new Error(
     `Bad response from Slippi: ${response.status} - ${JSON.stringify(
-      await response.json()
+      await response.text()
     )}`
   );
 }
