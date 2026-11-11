@@ -19,13 +19,8 @@ cp package-lock.json dist
 gcloud functions deploy \
   register-function \
   --gen2 \
-<<<<<<< HEAD
-  --runtime=nodejs22 \
-  --region=us-east1 \
-=======
   --runtime=nodejs22 \
   --region=$REGION \
->>>>>>> d03b125 (Make deploy.sh strict, apply image cleanup policy post-deploy, deploy from main only)
   --source=dist \
   --entry-point=register \
   --trigger-http \
@@ -37,13 +32,8 @@ gcloud functions deploy \
 gcloud functions deploy \
   recurring-scrape \
   --gen2 \
-<<<<<<< HEAD
-  --runtime=nodejs22 \
-  --region=us-east1 \
-=======
   --runtime=nodejs22 \
   --region=$REGION \
->>>>>>> d03b125 (Make deploy.sh strict, apply image cleanup policy post-deploy, deploy from main only)
   --source=dist \
   --entry-point=recurring-scrape \
   --trigger-topic=daily-scrape \
